@@ -36,38 +36,38 @@ class TestAllGetterTypes(unittest.TestCase):
         self.VNA = KeysightE5080A()
 
     # SIMPLE GETTERS (one value)
-    def get_marker_X(self):
+    def test_get_marker_X(self):
         return_value = self.VNA.get_marker_X(marker_index = 1)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
 
-    def get_marker_Y(self):
+    def test_get_marker_Y(self):
         return_value = self.VNA.get_marker_Y(marker_index = 1)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
     
-    def get_marker_Y_at(self):
+    def test_get_marker_Y_at(self):
         return_value = self.VNA.get_marker_Y_at(marker_index = 1, frequency = 10)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
         
-    def get_minimum(self):
+    def test_get_minimum(self):
         return_value = self.VNA.get_minimum(marker_index = 1)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
     
-    def get_sweep_points(self):
+    def test_get_sweep_points(self):
         return_value = self.VNA.get_sweep_points()
         self.assertIsInstance(return_value, int, f'Not a integer but {type(return_value)}')
     
-    def get_Q(self):
+    def test_get_Q(self):
         return_value = self.VNA.get_Q(marker_index = 1)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
 
     # COMPLEX GETTERS (list of values)
-    def get_sweep_range(self) -> list:
+    def test_get_sweep_range(self) -> list:
         return_value = self.VNA.get_sweep_range()
         self.assertIsInstance(return_value), list, f'Not a built-in list but {type(return_value)}'
         self.assertIsInstance(return_value[0], float, f'Start value not a float but {type(return_value[0])}')
         self.assertIsInstance(return_value[1], float, f'Stop value not a float but {type(return_value[1])}')
 
-    def get_filter(self):
+    def test_get_filter(self):
         return_value = self.VNA.get_filter(marker_index = 1)
         self.assertIsInstance(return_value), list, f'Not a built-in list but {type(return_value)}'
         self.assertIsInstance(return_value[0], float, f'Bandwidth value not a float but {type(return_value[0])}')
@@ -75,7 +75,7 @@ class TestAllGetterTypes(unittest.TestCase):
         self.assertIsInstance(return_value[2], float, f'Q-factor value not a float but {type(return_value[2])}')
         self.assertIsInstance(return_value[3], float, f'Insertion loss value not a float but {type(return_value[3])}')
     
-    def get_complex_data(self):
+    def test_get_complex_data(self):
         return_value = self.VNA.get_complex_data()
         self.assertIsInstance(return_value), list, f'Not a built-in list but {type(return_value)}'
         self.assertIsInstance(return_value[0], list, f'First element is a built-in list (frequency-data pair) but {type(return_value[0])}')
@@ -89,17 +89,17 @@ class TestAllSetters(unittest.TestCase):
     def setUp(self):
         self.VNA = KeysightE5080A()
 
-    def set_marker_X(self):
+    def test_set_marker_X(self):
         test_value = 10.
         self.VNA.set_marker_X(marker_index=1, frequency= test_value)
         self.assertEqual(self.VNA.get_marker_X, test_value)
 
-    def set_sweep_points(self):
+    def test_set_sweep_points(self):
         test_value = 1001
         self.VNA.set_sweep_points(points=test_value)
         self.assertEqual(self.VNA.get_sweep_points, test_value)
 
-    def set_sweep_range(self):
+    def test_set_sweep_range(self):
         test_value = (5, 15)
         self.VNA.set_sweep_points(*test_value)
         self.assertEqual(self.VNA.get_sweep_points, test_value)
