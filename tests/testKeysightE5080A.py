@@ -45,7 +45,7 @@ class TestAllGetterTypes(unittest.TestCase):
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
     
     def test_get_marker_Y_at(self):
-        return_value = self.VNA.get_marker_Y_at(marker_index = 1, frequency = 10)
+        return_value = self.VNA.get_marker_Y_at(marker_index = 1, frequency = 10.)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
         
     def test_get_minimum(self):
@@ -63,23 +63,23 @@ class TestAllGetterTypes(unittest.TestCase):
     # COMPLEX GETTERS (list of values)
     def test_get_sweep_range(self) -> list:
         return_value = self.VNA.get_sweep_range()
-        self.assertIsInstance(return_value), list, f'Not a built-in list but {type(return_value)}'
+        self.assertIsInstance(return_value, tuple, f'Not a built-in list but {type(return_value)}')
         self.assertIsInstance(return_value[0], float, f'Start value not a float but {type(return_value[0])}')
         self.assertIsInstance(return_value[1], float, f'Stop value not a float but {type(return_value[1])}')
 
     def test_get_filter(self):
         return_value = self.VNA.get_filter(marker_index = 1)
-        self.assertIsInstance(return_value), list, f'Not a built-in list but {type(return_value)}'
+        self.assertIsInstance(return_value, list, f'Not a built-in list but {type(return_value)}')
         self.assertIsInstance(return_value[0], float, f'Bandwidth value not a float but {type(return_value[0])}')
-        self.assertIsInstance(return_value[1], float, f'Center value not a float but {type(return_value[1])}')
-        self.assertIsInstance(return_value[2], float, f'Q-factor value not a float but {type(return_value[2])}')
-        self.assertIsInstance(return_value[3], float, f'Insertion loss value not a float but {type(return_value[3])}')
+        self.assertIsInstance(return_value[1], float, f'Center value is not a float but {type(return_value[1])}')
+        self.assertIsInstance(return_value[2], float, f'Q-factor value is not a float but {type(return_value[2])}')
+        self.assertIsInstance(return_value[3], float, f'Insertion loss value is not a float but {type(return_value[3])}')
     
     def test_get_complex_data(self):
         return_value = self.VNA.get_complex_data()
-        self.assertIsInstance(return_value), list, f'Not a built-in list but {type(return_value)}'
-        self.assertIsInstance(return_value[0], list, f'First element is a built-in list (frequency-data pair) but {type(return_value[0])}')
-        self.assertIsInstance(return_value[0][0], float, f'Frequency value not a float but {type(return_value[0][0])}')
+        self.assertIsInstance(return_value, list, f'Not a built-in list but {type(return_value)}')
+        self.assertIsInstance(return_value[0], tuple, f'First element is not a built-in list (frequency-data pair) but {type(return_value[0])}')
+        self.assertIsInstance(return_value[0][0], float, f'Frequency value is not a float but {type(return_value[0][0])}')
         self.assertIsInstance(return_value[0][1], complex, f'Data value not a complex but {type(return_value[0][1])}')
 
 class TestAllSetters(unittest.TestCase):
@@ -91,18 +91,18 @@ class TestAllSetters(unittest.TestCase):
 
     def test_set_marker_X(self):
         test_value = 10.
-        self.VNA.set_marker_X(marker_index=1, frequency= test_value)
-        self.assertEqual(self.VNA.get_marker_X, test_value)
+        self.VNA.set_marker_X(marker_index=1, frequency=test_value)
+        self.assertEqual(self.VNA.get_marker_X(marker_index=1), test_value)
 
     def test_set_sweep_points(self):
         test_value = 1001
         self.VNA.set_sweep_points(points=test_value)
-        self.assertEqual(self.VNA.get_sweep_points, test_value)
+        self.assertEqual(self.VNA.get_sweep_points(), test_value)
 
     def test_set_sweep_range(self):
         test_value = (5, 15)
-        self.VNA.set_sweep_points(*test_value)
-        self.assertEqual(self.VNA.get_sweep_points, test_value)
+        self.VNA.set_sweep_range(*test_value)
+        self.assertEqual(self.VNA.get_sweep_range(), test_value)
         
 if __name__=="__main__":
     unittest.main()
