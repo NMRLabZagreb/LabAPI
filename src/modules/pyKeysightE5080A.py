@@ -38,16 +38,16 @@ class KeysightE5080A:
 
         # since Python 3.8 Agilent visa32.dll fails to load because it cannot find its .dll dependencies.
         # These two folders should be added manually to the search path
-        os.add_dll_directory(config['KeysightE5080A.x86_dll'])
-        os.add_dll_directory(config['KeysightE5080A.x64_dll'])
+        os.add_dll_directory(config['KeysightE5080A']['x86_dll'])
+        os.add_dll_directory(config['KeysightE5080A']['x64_dll'])
 
         # Handle resource address
         if address is not None:
             # Save configuration
-            config['KeysightE5080A.address'] = address
+            config['KeysightE5080A']['address'] = address
         else:
-            if 'KeysightE5080A.address' in config:
-                address = config['KeysightE5080A.address']
+            if 'KeysightE5080A' in config and 'address' in config['KeysightE5080A']:
+                address = config['KeysightE5080A']['address']
             else:
                 raise Exception('Resource address not provided!')
 
