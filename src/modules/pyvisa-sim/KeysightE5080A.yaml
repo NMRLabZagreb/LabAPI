@@ -1,0 +1,123 @@
+spec: 1.0
+devices:
+  KeysightE5080A:
+    eom:
+      USB INSTR:
+        q: "\r\n"
+        r: "\n"
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+
+    error:
+      response:
+        command_error: 1
+      status_register:
+        - q: "*ESR?"
+          command_error: 32
+          query_error: 4
+
+    dialogues:
+      - q: "*IDN?"
+        r: "Keysight E5080A"
+      - q: ":CALC1:MARK1:FUNC:EXEC MIN"
+      - q: ":CALC1:MEAS1:MARK1:NOTC ON"
+      - q: ":CALC1:MEAS1:MARK1:NOTC:REF PEAK"
+      - q: ":CALC1:MEAS1:MARK1:NOTC:THR -13"
+      - q: ":CALC1:MEAS1:MARK1:NOTC:DATA?"
+        r: "0.2, 10, 50, 0.1"
+      - q: ":CALC1:MEAS1:MARK1:NOTC OFF"
+      - q: ":CALC1:MEAS1:MARK1:BWID ON"
+      - q: ":CALC1:MEAS1:MARK1:BWID:REF PEAK"
+      - q: ":CALC1:MEAS1:MARK1:BWID:DATA?"
+        r: "0.2, 10, 50, 0.1"
+      - q: ":CALC1:MEAS1:MARK1:BWID OFF"
+
+
+    properties:  
+      channel:
+        default: "CH1_S11_1"
+        specs:
+          valid: ["CH1_S11_1",]
+          type: str
+        getter:
+          q: ':CALC1:PAR:SEL?'
+          r: "{:s}"
+        setter:
+          q: ':CALC1:PAR:SEL "{:s}"'
+      marker:
+        default: 'ON'
+        specs:
+          valid: ['ON', 'OFF']
+          type: str
+        getter:
+          q: "CALC1:MARK1?"
+          r: "{:s}"
+        setter:
+          q: ":CALC1:MARK1 {:s}"
+      frequency:
+        default: 10_000_000
+        specs:
+          min: 1
+          max: 2_000_000_000
+          type: float
+        getter:
+          q: ":CALC1:MARK1:X?"
+          r: "{:.2f}"
+        setter:
+          q: ":CALC1:MARK1:X {:.2f}"
+      amplitude:
+        default: -10.0
+        specs:
+          min: -30.0
+          max: 0.0
+          type: float
+        getter:
+          q: ":CALC1:MARK1:Y?"
+          r: "{:.2f}"
+        setter:
+          q: ":CALC1:MARK1:Y {:.2f}"
+      sweep_points:
+        default: 1001
+        specs:
+          min: 1
+          max: 2001
+          type: int
+        getter:
+          q: ":SENS1:SWE:POIN?"
+          r: "{:d}"
+        setter:
+          q: ":SENS1:SWE:POIN {:d}"
+      start_frequency:
+        default: 5.0
+        specs:
+          min: 1
+          max: 2_000_000_000
+          type: float
+        getter:
+          q: ":SENS1:FREQ:STAR?"
+          r: "{:.2f}"
+        setter:
+          q: ":SENS1:FREQ:STAR {:.2f}"
+      stop_frequency:
+        default: 15.0
+        specs:
+          min: 1
+          max: 2_000_000_000
+          type: float
+        getter:
+          q: ":SENS1:FREQ:STOP?"
+          r: "{:.2f}"
+        setter:
+          q: ":SENS1:FREQ:STOP {:.2f}"
+      bwid_threshold:
+        default: 0.5
+        specs:
+          min: 0
+          max: 1
+          type: float
+        getter:
+          q: ":CALC1:MEAS1:MARK1:BWID:THR?"
+          r: "{:.2f}"
+        setter:
+          q: ":CALC1:MEAS1:MARK1:BWID:THR {:.2f}"

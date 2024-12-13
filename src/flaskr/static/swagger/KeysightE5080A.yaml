@@ -1,0 +1,365 @@
+  /keysighte5080a/get_marker_X:
+    get:
+      tags:
+        - Keysight E5080A
+      summary: Get frequency [MHz] for Marker [X] 
+      description: Returns the frequency in MHz at which marker given by marker_index is located.
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+    post:
+      tags:
+        - Keysight E5080A
+      summary: Get frequency [MHz] for Marker [X] 
+      description: Returns the frequency in MHz at which marker given by marker_index is located.
+      produces:
+        - application/json
+      parameters:
+        - name: marker_index
+          in: body
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          schema:
+            type: object
+            default: {"marker_index": 1}
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_marker_Y:
+    get:
+      tags:
+        - Keysight E5080A
+      summary: Get S11 parameter value [dB] for Marker [X] 
+      description: Returns an S11 parameter value in dB at the frequency where marker given by marker_index is located.
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_marker_Y_at:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get S11 parameter value [dB] at given frequency [MHz] for Marker [X] 
+      description: Moves a Marker given by marker_index to the desired frequency, then returns an S11 parameter value in dB. 
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+        - name: frequency
+          in: query
+          description: Frequency in MHz.
+          required: true
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_minimum:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get frequency [MHz] of a S11 parameter minimum for Marker [X] 
+      description: Performs minimum search for a Marker given by marker_index, then returns the frequency in MHz. 
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_sweep_points:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get a number of sweep (measurement) points 
+      description: Returns a number of sweep points.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_Q:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get a Q-factor of the tuning/matching circuit 
+      description: Finds an S11 minimum and sets a Marker given by marker_index to the minimum frequency. Turns on a NOTCH filter and reads a Q-factor at 13 dB (hard coded).
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_sweep_range:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get a current sweep range.
+      description: Returns a pair of frequencies defining a sweep range (f_min, f_max).
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_filter:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get a bandwidth filter data.
+      description: Returns filter data as a list [bandwidth, center, Q-factor, insertion_loss].
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+        - name: threshold
+          in: query
+          description: S11 value from 0 to 1 where bandwidth and Q-factor are calculated.
+          required: true
+          default: 1
+          schema:
+            type: float
+            format: float32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/get_complex_data:
+    get:
+      tags:
+        - Keysight E5080A
+      summary:  Get a full complex sweep data.
+      description: Returns a list of (frequency, S11) values for each sweep point, where S11 is given as a complex number.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/set_marker_X:
+    put:
+      tags:
+        - Keysight E5080A
+      summary: Set frequency [MHz] for Marker [X] 
+      description: Sets the frequency in MHz at which marker given by marker_index is located.
+      produces:
+        - plain/text
+      parameters:
+        - name: marker_index
+          in: query
+          description: Integer from 1 to 10 denoting Marker index.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+        - name: frequency
+          in: query
+          description: Frequency in MHz as a float
+          required: true
+          default: 10
+          schema:
+            type: float
+            format: float32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/set_sweep_points:
+    put:
+      tags:
+        - Keysight E5080A
+      summary:  Set a number of sweep (measurement) points 
+      description: Sets a number of sweep points.
+      produces:
+        - plain/text
+      parameters:
+        - name: points
+          in: query
+          description: Number of sweep points as an integer from 1 to 2001.
+          required: true
+          default: 1
+          schema:
+            type: integer
+            format: int32
+            min: 1
+            max: 2001
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/set_sweep_range:
+    put:
+      tags:
+        - Keysight E5080A
+      summary:  Set a sweep range.
+      description: Given a pair of frequencies sets a sweep range.
+      produces:
+        - plain/text
+      parameters:
+        - name: start
+          in: query
+          description: Start frequency in MHz as a float.
+          required: true
+          default: 5.0
+          schema:
+            type: float
+            format: float32
+        - name: stop
+          in: query
+          description: Stop frequency in MHz as a float.
+          required: true
+          default: 15.0
+          schema:
+            type: float
+            format: float32
+      responses:
+        200:
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.

@@ -2,13 +2,13 @@
 
 """
 
-Unit tests for the serial (USB) communication with Keysight E5080A VNA.
+Wrapper for the serial (USB) communication with Keysight E5080A VNA.
 
 """
 
 __author__ = "Ivan Jakovac"
 __email__ = "ivan.jakovac2@gmail.com"
-__version__ = "api_v0.1"
+__version__ = "v0.1"
 
 
 #  Copyright (C) 2020-2022 Ivan Jakovac

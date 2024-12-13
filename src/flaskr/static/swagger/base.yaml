@@ -1,0 +1,16 @@
+swagger: "2.0"
+info:
+  title: LabAPI
+  description: Control laboratory devices remotely.
+  contact:
+    email: ivan.jakovac2@gmail.com
+  version: 0.1
+servers:
+  - url: https://localhost:5000/
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: X-API-Key
+security:
+  - APIKeyHeader: []

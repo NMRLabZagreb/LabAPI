@@ -8,8 +8,7 @@ Wrapper for the serial (USB) communication with Keysight E5080A VNA.
 
 __author__ = "Ivan Jakovac"
 __email__ = "ivan.jakovac2@gmail.com"
-__version__ = "api_v0.1"
-
+__version__ = "v0.1"
 
 #  Copyright (C) 2020-2022 Ivan Jakovac
 #
@@ -28,18 +27,20 @@ import os
 import configparser
 
 class KeysightE5080A:
-    def __init__(self, address: str = None) -> None:
+    def __init__(self, address: str = None, device_present: bool = False) -> None:
         """
         Class to wrap communications with Keysight ENA E5080A network analyser
             
         """
+        path = os.path.dirname(__file__)
         config = configparser.ConfigParser()
-        config.read(os.path.dirname(__file__)+'/config.ini')
+        config.read(f'{path}/config.ini')
 
         # since Python 3.8 Agilent visa32.dll fails to load because it cannot find its .dll dependencies.
         # These two folders should be added manually to the search path
-        os.add_dll_directory(config['KeysightE5080A']['x86_dll'])
-        os.add_dll_directory(config['KeysightE5080A']['x64_dll'])
+        if os.path.exists(config['KeysightE5080A']['x86_dll']) and os.path.exists(config['KeysightE5080A']['x64_dll']):
+            os.add_dll_directory(config['KeysightE5080A']['x86_dll'])
+            os.add_dll_directory(config['KeysightE5080A']['x64_dll'])
 
         # Handle resource address
         if address is not None:
@@ -51,11 +52,16 @@ class KeysightE5080A:
             else:
                 raise Exception('Resource address not provided!')
 
-        # Keysight's VNA does not work with NI-VISA backend; one should install Agilent IO suite as a secondary backend
-        self.rm = visa.ResourceManager(config['KeysightE5080A']['x86_visa'])
+        
+        if device_present:
+            # Keysight's VNA does not work with NI-VISA backend; one should install Agilent IO suite as a secondary backend
+            self.rm = visa.ResourceManager(config['KeysightE5080A']['x86_visa'])
+        else:
+            # Mock VISA
+            self.rm = visa.ResourceManager(f'{path}/pyvisa-sim.yaml@sim')
 
         # Initialize communication; select channel 1, S11
-        self.VNA = self.rm.open_resource(address)
+        self.VNA = self.rm.open_resource(address, read_termination = '\n', write_termination = '\r\n')
         self.VNA.write(':CALC1:PAR:SEL "CH1_S11_1"')
 
     # SIMPLE GETTERS (one value)
@@ -78,7 +84,7 @@ class KeysightE5080A:
         Sets the position [in MHz] of a Marker [marker_index] and then returns its S11 value.
         """
         self.set_marker_X(marker_index, frequency)
-        return self.get_marker_Y(marker_index)
+        return float(self.get_marker_Y(marker_index))
         
     def get_minimum(self, marker_index: int) -> float:
         """

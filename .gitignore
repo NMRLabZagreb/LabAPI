@@ -3,3 +3,6 @@ src/modules/pyLakeShore332.py
 src/modules/pyLakeShore336.py
 src/modules/pyLakeShore340.py
 .vscode/settings.json
+src/flaskr/config.py
+**/__pycache__
+src/flaskr/static/swagger/swagger.yaml
