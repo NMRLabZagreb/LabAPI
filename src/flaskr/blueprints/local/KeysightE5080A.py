@@ -24,9 +24,9 @@ __version__ = "v0.1"
 #  see <https://www.gnu.org/licenses/>.
 
 from flask import Blueprint, request, jsonify
-from flaskr.config import API_KEY
+from ...config import API_KEY
 from hashlib import sha256
-from modules.pyKeysightE5080A import KeysightE5080A
+from ....modules.pyKeysightE5080A import KeysightE5080A
 
 # Blueprint is a global variable
 blueprint = Blueprint('KeysightE5080A', __name__, url_prefix='/keysighte5080a')
@@ -104,7 +104,7 @@ class localKeysightE5080A():
         
         @blueprint.route('/get_sweep_range', methods=['GET', 'POST'])
         def get_sweep_range():
-            response_value = self.VNA.get_Q()
+            response_value = self.VNA.get_sweep_range()
             if request.method == 'POST':
                 return jsonify({"start": response_value[0],
                                 "stop": response_value[1]}), 200
@@ -146,19 +146,20 @@ class localKeysightE5080A():
         @blueprint.route('/set_sweep_points', methods=['GET', 'PUT', 'POST'])
         def set_sweep_points():
             if request.method == 'POST':
-                self.VNA.set_sweep_points(int(request.json('points')))
+                self.VNA.set_sweep_points(int(request.json['points']))
                 return jsonify({}), 200
             elif request.method == 'GET' or request.method == 'PUT':
-                self.VNA.set_sweep_points(int(request.args('points')))
+                print(request.args)
+                self.VNA.set_sweep_points(int(request.args['points']))
                 return str(""), 200
             
         @blueprint.route('/set_sweep_range', methods=['GET', 'PUT', 'POST'])
         def set_sweep_range():
             if request.method == 'POST':
-                self.VNA.set_sweep_points(float(request.json('start')),float(request.json('stop')))
+                self.VNA.set_sweep_range(float(request.json['start']),float(request.json['stop']))
                 return jsonify({}), 200
             elif request.method == 'GET' or request.method == 'PUT':
-                self.VNA.set_sweep_points(float(request.args('start')),float(request.args('stop')))
+                self.VNA.set_sweep_range(float(request.args['start']),float(request.args['stop']))
                 return str(""), 200
 
         # Return blueprint to register in Flask app

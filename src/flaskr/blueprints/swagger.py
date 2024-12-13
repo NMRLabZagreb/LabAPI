@@ -23,7 +23,7 @@ __version__ = "v0.1"
 #  see <https://www.gnu.org/licenses/>.
 
 from flask_swagger_ui import get_swaggerui_blueprint
-from flaskr.config import AVAILABLE_DEVICES
+from ..config import AVAILABLE_DEVICES
 import os
 
 def swagger_blueprint():
@@ -63,8 +63,8 @@ def swagger_constructor():
     for device, properties in AVAILABLE_DEVICES.items():
         if os.path.exists(os.path.abspath(f'flaskr/static/swagger/{device}.yaml')):
             swagger_string += f'tags:\n'
-            swagger_string += f'  - name: {properties['name']}\n'
-            swagger_string += f'    description: {properties['description']}\n'
+            swagger_string += f'  - name: {properties["name"]}\n'
+            swagger_string += f'    description: {properties["description"]}\n'
             swagger_string += f'paths:\n'
             with open(f'flaskr/static/swagger/{device}.yaml') as device_file:
                 swagger_string += device_file.read()

@@ -23,7 +23,7 @@ __version__ = "v0.1"
 #  see <https://www.gnu.org/licenses/>.
 
 from flask import Flask, redirect
-from flaskr.config import API_KEY, THIS_PC, AVAILABLE_DEVICES
+from .config import API_KEY, THIS_PC, AVAILABLE_DEVICES
 from importlib import import_module
 
 def create_app():
@@ -47,14 +47,14 @@ def create_app():
         if properties['host'] in ['localhost', '127.0.0.1'] or f"{properties['host']}:{properties['port']}" == THIS_PC:
             # If HOST is local, use local modules connect API calls to respective functions which handle VISA communication
             # Import local device modules
-            module = import_module(f'flaskr.blueprints.local.{device}')
+            module = import_module(f'.blueprints.local.{device}', package = __package__)
             localKeysightE5080A = getattr(module, f'local{device}')
             # Instantiate device: if in debug mode - device will use mock VISA
             instanceKeysightE5080A = localKeysightE5080A(device_present = properties['device_present'])
             app.register_blueprint(instanceKeysightE5080A.set_routes())
         else:
             # If HOST is remote server, use remote modules forward API calls to respective IPs
-            module = import_module(f'flaskr.blueprints.remote.set_routes')
+            module = import_module('.blueprints.remote.set_routes', package = __package__)
             # Set route(s) for each device; different hosts are handled inside set_routes() function
             device_blueprint = module.set_routes(device, properties)
             app.register_blueprint(device_blueprint)
