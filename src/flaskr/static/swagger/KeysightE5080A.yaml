@@ -93,8 +93,8 @@
           in: query
           description: Frequency in MHz.
           required: true
-          type: float
-          format: float32
+          type: number
+          format: float
       responses:
         200:
           description: Success.
@@ -199,8 +199,8 @@
           description: S11 value from 0 to 1 where bandwidth and Q-factor are calculated.
           required: true
           default: 1
-          type: float
-          format: float32
+          type: number
+          format: float
       responses:
         200:
           description: Success.
@@ -244,8 +244,8 @@
           description: Frequency in MHz as a float
           required: true
           default: 10.0
-          type: float
-          format: float32
+          type: number
+          format: float
       responses:
         200:
           description: Success.
@@ -290,15 +290,15 @@
           description: Start frequency in MHz as a float.
           required: true
           default: 5.0
-          type: float
-          format: float32
+          type: number
+          format: float
         - name: stop
           in: query
           description: Stop frequency in MHz as a float.
           required: true
           default: 15.0
-          type: float
-          format: float32
+          type: number
+          format: float
       responses:
         200:
           description: Success.
