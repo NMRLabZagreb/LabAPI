@@ -12,16 +12,11 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -44,10 +39,6 @@
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -66,16 +57,11 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -94,20 +80,17 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
         - name: frequency
           in: query
           description: Frequency in MHz.
           required: true
+          type: float
+          format: float32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -126,16 +109,11 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -151,10 +129,6 @@
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -173,16 +147,11 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -198,10 +167,6 @@
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -220,24 +185,18 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
         - name: threshold
           in: query
           description: S11 value from 0 to 1 where bandwidth and Q-factor are calculated.
           required: true
           default: 1
-          schema:
-            type: float
-            format: float32
+          type: float
+          format: float32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -253,10 +212,6 @@
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -275,24 +230,18 @@
           description: Integer from 1 to 10 denoting Marker index.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
+          type: integer
+          format: int32
         - name: frequency
           in: query
           description: Frequency in MHz as a float
           required: true
-          default: 10
-          schema:
-            type: float
-            format: float32
+          default: 10.0
+          type: float
+          format: float32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -311,18 +260,13 @@
           description: Number of sweep points as an integer from 1 to 2001.
           required: true
           default: 1
-          schema:
-            type: integer
-            format: int32
-            min: 1
-            max: 2001
+          type: integer
+          format: int32
+          min: 1
+          max: 2001
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
@@ -341,24 +285,18 @@
           description: Start frequency in MHz as a float.
           required: true
           default: 5.0
-          schema:
-            type: float
-            format: float32
+          type: float
+          format: float32
         - name: stop
           in: query
           description: Stop frequency in MHz as a float.
           required: true
           default: 15.0
-          schema:
-            type: float
-            format: float32
+          type: float
+          format: float32
       responses:
         200:
           description: Success.
-          content:
-            text/plain:
-              schema:
-                type: string
         401:
           description: Not authorized.
         500:
