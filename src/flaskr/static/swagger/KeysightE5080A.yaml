@@ -35,7 +35,14 @@
           required: true
           schema:
             type: object
-            default: {"marker_index": 1}
+            required:
+              - marker_index
+            properties:
+              marker_index:
+                type: integer
+                default: 1
+                min: 1
+                max: 10
       responses:
         200:
           description: Success.
@@ -262,8 +269,6 @@
           default: 1
           type: integer
           format: int32
-          min: 1
-          max: 2001
       responses:
         200:
           description: Success.

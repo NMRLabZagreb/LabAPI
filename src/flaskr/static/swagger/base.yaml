@@ -5,8 +5,7 @@ info:
   contact:
     email: ivan.jakovac2@gmail.com
   version: 0.1
-servers:
-  - url: https://localhost:5000/
+host: https://localhost:5000/
 securityDefinitions:
   APIKeyHeader:
     type: apiKey
