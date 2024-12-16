@@ -24,7 +24,7 @@ __version__ = "v0.1"
 
 from flask import Blueprint, request, jsonify
 import requests
-from flaskr.config import API_KEY
+from ...config import API_KEY
 from hashlib import sha256
         
 def set_routes(device, properties):
