@@ -26,7 +26,7 @@ __version__ = "v0.1"
 from flask import Blueprint, request, jsonify
 from ...config import API_KEY
 from hashlib import sha256
-from ....modules.pyKeysightE5080A import KeysightE5080A
+from ...modules.pyKeysightE5080A import KeysightE5080A
 
 # Blueprint is a global variable
 blueprint = Blueprint('KeysightE5080A', __name__, url_prefix='/keysighte5080a')

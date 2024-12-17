@@ -1,5 +1,0 @@
-spec: 1.0
-resources:
-  USB0::0x2A8D::0x0001::MY55402330::INSTR:
-    device: KeysightE5080A
-    filename: pyvisa-sim/KeysightE5080A.yaml

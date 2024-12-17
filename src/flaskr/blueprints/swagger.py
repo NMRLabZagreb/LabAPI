@@ -23,6 +23,7 @@ __version__ = "v0.1"
 #  see <https://www.gnu.org/licenses/>.
 
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask import app
 from ..config import AVAILABLE_DEVICES
 import os
 
@@ -70,5 +71,5 @@ def swagger_constructor():
                 swagger_string += device_file.read()
     
     # Finally, write merged swagger.yaml to disk
-    with open('flaskr/static/swagger/swagger.yaml', 'w') as output_file:
+    with open(f'flaskr/static/swagger/swagger.yaml', 'w') as output_file:
         output_file.write(swagger_string)
