@@ -25,14 +25,15 @@ __version__ = "v0.1"
 
 import unittest
 import sys
-from ..src.flaskr.modules.pyIPS120 import IPS120
+sys.path.append('../src/flaskr/modules')
+from pyIPS120 import IPS120
 
 class TestAllGetterTypes(unittest.TestCase):
     """
     Test all getters types
     """
     def setUp(self):
-        self.ips = IPS120()
+        self.ips = IPS120(device_present = True)
 
     # SIMPLE GETTERS (one value)
     def test_get_output_current(self):
@@ -77,7 +78,7 @@ class TestAllGetterTypes(unittest.TestCase):
     
     def test_get_status(self):
         return_value = self.ips.get_status()
-        self.assertIsInstance(return_value, str, f'Not a string but {type(return_value)}')
+        self.assertIsInstance(return_value, dict, f'Not a string but {type(return_value)}')
 
 class TestNonActiveSetters(unittest.TestCase):
     """
@@ -103,7 +104,7 @@ class TestNonActiveSetters(unittest.TestCase):
 
     def test_set_sweep_rate_field(self):
         test_value = 0.05
-        self.ips.set_sweep_rate_current(sweep_rate=test_value)
+        self.ips.set_sweep_rate_field(sweep_rate=test_value)
         self.assertEqual(self.ips.get_sweep_rate_field(), test_value)
         
 if __name__=="__main__":

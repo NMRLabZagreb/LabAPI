@@ -13,15 +13,18 @@ git clone http://github.com/ivanjkv/labapi
 ```
 Create a virtual environment and activate it:
 ```bash
-py -m venv ./venv
-./venv/bin/activate
+py -m venv .venv
+.venv/bin/activate
 ```
 Install the required Python packages:
 ```bash
 py -m pip install -r requirements.txt
 ```
+
+Navigate to the src directory, copy `config_template.py` file and rename it to `config.py`. Edit configuration parameters in the file.
+
 #### Development
-Navigate to the src directory and start the Flask server:
+Start the Flask server:
 ```bash
 py -m flask --app flaskr run [--debug] [--host 0.0.0.0] [--port 5000]
 ```
@@ -38,7 +41,7 @@ This setup utilizes **Waitress** as the WSGI server and **nginx** as the reverse
 To install Waitress, first activate your virtual environment:
 
 ```bash
-./venv/bin/activate
+.venv/bin/activate
 ```
 
 Then, install the Waitress package:

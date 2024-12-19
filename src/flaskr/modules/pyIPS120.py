@@ -56,9 +56,9 @@ class IPS120:
             self.rm = visa.ResourceManager(f'{path}/pyvisa-sim.yaml@sim')
 
         # Initialize communication
-        self.ips = self.rm.open_resource(address, read_termination = '\n', write_termination = '\r\n')
-        # Set control to remote & unlocked
-        self.ips.write('C3')
+        self.ips = self.rm.open_resource(address, read_termination = '\r\n', write_termination = '\r\n')
+        # Set termination to /r/n
+        self.ips.write('Q2')
 
         # Define status codes
         self.system_status_m = {0: 'Normal',
@@ -86,61 +86,61 @@ class IPS120:
         """
         This method gets the current output current.
         """
-        return float(self.ips.query('R 0'))
+        return float(self.ips.query('R 0').strip('R'))
     
     def get_magnet_current(self) -> float:
         """
         This method gets the current magnet current.
         """
-        return float(self.ips.query('R 2'))
+        return float(self.ips.query('R 2').strip('R'))
         
     def get_setpoint_current(self) -> float:
         """
         This method gets the current target current.
         """
-        return float(self.ips.query('R 5'))
+        return float(self.ips.query('R 5').strip('R'))
         
     def get_sweep_rate_current(self) -> float:
         """
         This method gets the current sweep rate in amp/minute.
         """
-        return float(self.ips.query('R 6'))
+        return float(self.ips.query('R 6').strip('R'))
     
     def get_output_field(self) -> float:
         """
         This method gets the output field (in sweep) in Teslas.
         """
-        return float(self.ips.query('R 7'))
+        return float(self.ips.query('R 7').strip('R'))
         
     def get_setpoint_field(self) -> float:
         """
         This method gets the target field (setpoint) in Teslas.
         """
-        return float(self.ips.query('R 8'))
+        return float(self.ips.query('R 8').strip('R'))
     
     def get_sweep_rate_field(self) -> float:
         """
         This method gets the field sweep rate Tesla/min.
         """
-        return float(self.ips.query('R 9'))
+        return float(self.ips.query('R 9').strip('R'))
         
     def get_persistent_current(self) -> float:
         """
         This method gets the persistent current (no sweeping) in Amps.
         """
-        return float(self.ips.query('R 16'))
+        return float(self.ips.query('R 16').strip('R'))
     
     def get_persistent_field(self) -> float:
         """
         This method gets the persistent field (no sweeping) in Teslas.
         """
-        return float(self.ips.query('R 18'))
+        return float(self.ips.query('R 18').strip('R'))
     
     def get_heater_current(self) -> float:
         """
         This method gets the heater current in miliAmps.
         """
-        return float(self.ips.query('R 20'))
+        return float(self.ips.query('R 20').strip('R'))
     
     #STATUS STRING HANDLING
     def get_status(self) -> str:
@@ -195,73 +195,84 @@ class IPS120:
         """
         This method sends the HOLD command.
         """
-        self.ips.write('A0')
+        self.ips.query('C1')
+        self.ips.query('A0')
+        self.ips.query('C0')
 
     def set_go_to_setpoint(self):
         """
         This method sends the GO TO SETPOINT command.
         """
-        self.ips.write('A1')
+        self.ips.query('C1')
+        self.ips.query('A1')
+        self.ips.query('C0')
 
     def set_go_to_zero(self):
         """
         This method sends the GO TO ZERO command.
         """
-        self.ips.write('A2')
+        self.ips.query('C1')
+        self.ips.query('A2')
+        self.ips.query('C0')
     
     def set_clamped(self):
         """
         This method clamps the output.
         """
-        self.ips.write('A4')
+        self.ips.query('C1')
+        self.ips.query('A4')
+        self.ips.query('C0')
 
     def set_heater_off(self):
         """
         This method turns off the heater.
         """
-        self.ips.write('H0')
+        self.ips.query('C1')
+        self.ips.query('H0')
+        self.ips.query('C0')
 
     def set_heater_on(self):
         """
         This method turns on the heater.
         """
-        self.ips.write('H1')
-
+        self.ips.query('C1')
+        self.ips.query('H1')
+        self.ips.query('C0')
+        
     def set_setpoint_current(self, setpoint_current: float):
         """
         This method sets the current [Amps] setpoint. Current can be negative and the method
         will handle the polarity change.
         """
-        if setpoint_current > 0:
-            self.ips.write('P1')
-            self.ips.write(f'I{setpoint_current:.3f}')
-        else:
-            self.ips.write('P2')
-            self.ips.write(f'I{setpoint_current:.3f}')
+        self.ips.query('C1')
+        self.ips.query(f'I{setpoint_current:.3f}')
+        self.ips.query('C0')
+        self.ips.clear()
 
     def set_setpoint_field(self, setpoint_field: float):
         """
         This method set the field [Tesla] setpoint. Field can be negative and the method
         will handle the polarity change.
         """
-        if setpoint_field > 0:
-            self.ips.write('P1')
-            self.ips.write(f'J{setpoint_field:.4f}')
-        else:
-            self.ips.write('P2')
-            self.ips.write(f'J{setpoint_field:.4f}')
+        self.ips.query('C1')
+        self.ips.query(f'J{setpoint_field:.4f}')
+        self.ips.query('C0')
 
     def set_sweep_rate_current(self, sweep_rate: float):
         """
         This method set the current sweep rate [Amps/min].
         """
-        self.ips.write(f'S{sweep_rate:.2f}')
+        self.ips.query('C1')
+        self.ips.query(f'S{abs(sweep_rate):.2f}')
+        self.ips.query('C0')
 
     def set_sweep_rate_field(self, sweep_rate: float):
         """
         This method set the field sweep rate [Teslas/min].
         """
-        self.ips.write(f'T{sweep_rate:.3f}')
+        self.ips.query('C1')
+        self.ips.query(f'T{abs(sweep_rate):.3f}')
+        self.ips.query('C0')
 
     ### HIGHER LEVEL COMMANDS ###
     def go_to_current_field(self):
