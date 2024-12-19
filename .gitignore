@@ -1,6 +1,7 @@
 src/modules/
 .vscode/
 .venv/
+labapi.bat
 src/flaskr/config.py
 **/__pycache__
 src/flaskr/static/swagger/swagger.yaml
