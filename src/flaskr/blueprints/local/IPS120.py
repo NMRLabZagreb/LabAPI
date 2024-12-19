@@ -26,15 +26,14 @@ __version__ = "v0.1"
 from flask import Blueprint, request, jsonify
 from ...config import API_KEY
 from hashlib import sha256
-from ...modules.pyIPS120 import IPS120
 
 # Blueprint is a global variable
 blueprint = Blueprint('IPS120', __name__, url_prefix='/ips120')
 
 class localIPS120():
-    def __init__(self, device_present: bool = False):
+    def __init__(self, device):
         # Instantiate a VISA resource; IPS120 class implements various VISA queries as class methods
-        self.ips = IPS120(device_present=device_present)
+        self.ips = device
         
     # Authorization check
     @blueprint.before_request
@@ -181,7 +180,7 @@ class localIPS120():
                 if request.json['value'] == 'on':
                     self.ips.set_heater_on()
                 elif request.json['value'] == 'off':
-                    self.ips.set_heater_on()
+                    self.ips.set_heater_off()
                 else:
                     return jsonify({'error', 'unrecognized value'}), 200
                 return jsonify({}), 200
@@ -189,7 +188,7 @@ class localIPS120():
                 if request.args['value'] == 'on':
                     self.ips.set_heater_on()
                 elif request.args['value'] == 'off':
-                    self.ips.set_heater_on()
+                    self.ips.set_heater_off()
                 else:
                     return 'unrecognized value', 200
                 return str(), 200

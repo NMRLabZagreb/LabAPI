@@ -26,15 +26,14 @@ __version__ = "v0.1"
 from flask import Blueprint, request, jsonify
 from ...config import API_KEY
 from hashlib import sha256
-from ...modules.pyKeysightE5080A import KeysightE5080A
 
 # Blueprint is a global variable
 blueprint = Blueprint('KeysightE5080A', __name__, url_prefix='/keysighte5080a')
 
 class localKeysightE5080A():
-    def __init__(self, device_present: bool = False):
+    def __init__(self, device):
         # Instantiate a VISA resource; KeysightE5080A class implements various VISA queries as class methods
-        self.VNA = KeysightE5080A(device_present=device_present)
+        self.VNA = device
         
     # Authorization check
     @blueprint.before_request
