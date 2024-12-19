@@ -11,11 +11,11 @@ devices:
 
     error:
       response:
-        command_error: 1
+        command_error: -1
       status_register:
         - q: "*ESR?"
-          command_error: 32
-          query_error: 4
+          command_error: -32
+          query_error: -4
 
     dialogues:
       - q: "*IDN?"
