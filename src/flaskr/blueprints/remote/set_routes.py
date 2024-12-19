@@ -34,7 +34,7 @@ def set_routes(device, properties):
     # Instantiate blueprint for a new device - new prefix
     blueprint = Blueprint(device, __name__, url_prefix=f'/{device.lower()}')
     # Construct an URL template knowing the device's host and port
-    request_url_template = f'://{properties['host']}:{properties['port']}/{device.lower()}/'
+    request_url_template = f'https://{properties["host"]}/{device.lower()}/'
 
     # Authorization check
     @blueprint.before_request
@@ -45,7 +45,7 @@ def set_routes(device, properties):
     # Catch every call and forward it
     @blueprint.route('/<path:path>', methods=['GET', 'PUT', 'POST'])
     def forward_api_call(path):
-        request_url = f'{request.scheme}{request_url_template}{path}?{request.query_string.decode()}'
+        request_url = f'{request_url_template}{path}?{request.query_string.decode()}'
         if request.method == 'GET':
             # For GET call forward full request URL with queries and HTTP headers
             response = requests.get(request_url, headers=request.headers)
@@ -56,7 +56,7 @@ def set_routes(device, properties):
             return response.text, response.status_code
         elif request.method == 'POST':
             # For POST call forward request URL, HTTP headers and JSON payload
-            request_url = request.scheme + request_url_template + path
+            request_url = request_url_template + path
             response = requests.put(request_url, headers=request.headers, json=request.json)
             return response.json, response.status_code
         

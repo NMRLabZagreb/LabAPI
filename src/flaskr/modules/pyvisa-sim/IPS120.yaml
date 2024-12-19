@@ -1,0 +1,109 @@
+spec: 1.0
+devices:
+  IPS120:
+    eom:
+      USB INSTR:
+        q: "\r\n"
+        r: "\n"
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+
+    error:
+      response:
+        command_error: -1
+      status_register:
+        - q: "*ESR?"
+          command_error: -32
+          query_error: -4
+
+    dialogues:
+      - q: "*IDN?"
+        r: "IPS120"
+      - q: 'C3'
+        r: OK
+      - q: 'R 0'
+        r: '0.00'
+      - q: 'R 2'
+        r: '2.22'
+      - q: 'R 7'
+        r: '7.77'
+      - q: 'R 16'
+        r: '16.16'
+      - q: 'R 18'
+        r: '18.18'
+      - q: 'R 20'
+        r: '20.20'
+      - q: 'X'
+        r: 'X11A2C4H1M00P01'
+
+    properties:  
+      target_current:
+        default: 0.0
+        specs:
+          type: float
+        getter:
+          q: 'R 5'
+          r: '{:.3f}'
+        setter:
+          q: 'I{:.3f}'
+      sweep_rate_current:
+        default: 1.0
+        specs:
+          type: float
+        getter:
+          q: 'R 6'
+          r: '{:.3f}'
+        setter:
+          q: 'S{:.3f}'
+      target_field:
+        default: 2.0
+        specs:
+          type: float
+        getter:
+          q: 'R 8'
+          r: '{:.4f}'
+        setter:
+          q: 'J{:.4f}'
+      sweep_rate_field:
+        default: 1.0
+        specs:
+          type: float
+        getter:
+          q: 'R 9'
+          r: '{:.4f}'
+        setter:
+          q: 'T{:.4f}'
+      activity:
+        default: 0
+        specs:
+          type: int
+          valid: [0, 1, 2, 4]
+        getter:
+          q: 'getA'
+          r: '{:d}'
+        setter:
+          q: 'A{:d}'
+      polarity:
+        default: 1
+        specs:
+          type: int
+          valid: [1, 2]
+        getter:
+          q: 'getP'
+          r: '{:d}'
+        setter:
+          q: 'P{:d}'
+      heater:
+        default: 0
+        specs:
+          type: int
+          valid: [0, 1]
+        getter:
+          q: 'getH'
+          r: '{:d}'
+        setter:
+          q: 'H{:d}'
+          
+
+      

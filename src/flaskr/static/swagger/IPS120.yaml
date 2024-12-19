@@ -1,0 +1,474 @@
+  /ips120/get_status:
+    post:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS status
+      description: Returns system status (normal, quench), activity status (hold on/off) and heater status.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_output_field:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS output field [Teslas]
+      description: Returns the effective magnetic field in Teslas for the current that the IPS is currently outputting.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_persistent_field:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the persistent field in magnet [Teslas]
+      description: Returns the magnetic field in Teslas when the magnet is in persistent mode.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_setpoint_field:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS setpoint field [Teslas]
+      description: Returns the setpoint (target) field in Teslas.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_sweep_rate_field:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS field sweep rate [Teslas/min]
+      description: Returns the set magnetic field sweep rate in Teslas/min.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_is_heater_on:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the heater status as Boolean
+      description: Returns True when the heater is on, False otherwise.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_is_on_hold:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the activity status HOLD as Boolean
+      description: Returns True when the IPS is on hold, False otherwise.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_is_going_to_setpoint:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the activity status GO TO SET as Boolean
+      description: Returns True when the IPS is ramping up the current, False otherwise.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_is_going_to_zero:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the activity status GO TO ZERO as Boolean
+      description: Returns True when the IPS is ramping down the current, False otherwise.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_is_clamped:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the activity status CLAMPED as Boolean
+      description: Returns True when the IPS output is clamped, False otherwise.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_setpoint_field:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary:  Set the setpoint field [Teslas] 
+      description: Sets the setpoint (target) magnetic field in Teslas.
+      produces:
+        - plain/text
+      parameters:
+        - name: setpoint_field
+          in: query
+          description: Setpoint magnetic field in Teslas to 4 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_sweep_rate_field:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary:  Set the sweep rate field [Teslas/min] 
+      description: Sets the IPS sweep rate field in Teslas/min.
+      produces:
+        - plain/text
+      parameters:
+        - name: sweep_rate_field
+          in: query
+          description: Sweep rate current in Teslas/min to 4 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_heater:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary: Switch the heater status
+      description: Toggles the heater on or off.
+      produces:
+        - plain/text
+      parameters:
+        - name: value
+          in: query
+          description: Allowed heater status values are "on" or "off".
+          required: true
+          type: string
+          enum: [on, off] 
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_hold:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary: Set the activity status to HOLD
+      description: Sets the activity status to HOLD.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_go_to_setpoint:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary: Set the activity status to GO TO SETPOINT
+      description: Sets the activity status to GO TO SETPOINT.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_go_to_zero:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary: Set the activity status to GO TO ZERO
+      description: Sets the activity status to GO TO ZERO.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_clamped:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary: Set the activity status to CLAMPED
+      description: Clamp the magnet coil switch.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_magnetic_field:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary:  Set the magnetic field to desired value [Teslas] 
+      description: Performs entire process of changing the magnetic field but does not enter persistent mode - useful for the magnetic field sweeps.
+      produces:
+        - plain/text
+      parameters:
+        - name: magnetic_field
+          in: query
+          description: Setpoint magnetic field in Teslas to 4 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+        - name: ramp_rate
+          in: query
+          description: Magnetic field sweep rate in Teslas/min to 4 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_persistent_magnetic_field:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary:  Set the persistent magnetic field to desired value [Teslas] 
+      description: Performs entire process of changing the magnetic field and enters the persistent mode.
+      produces:
+        - plain/text
+      parameters:
+        - name: magnetic_field
+          in: query
+          description: Setpoint magnetic field in Teslas to 4 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+        - name: ramp_rate
+          in: query
+          description: Magnetic field sweep rate in Teslas/min to 4 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_output_current:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS output current [Amps]
+      description: Returns the current in Amps that the IPS is currently outputting.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_magnet_current:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the magnet coil current [Amps].
+      description: Returns the magnet coil current in Amps.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_setpoint_current:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS setpoint current [Amps]
+      description: Returns the setpoint (target) current in Amps.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_sweep_rate_current:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS current sweep rate [Amps/min]
+      description: Returns the set current sweep rate in Amps/min.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_persistent_current:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the persistent current in magnet [Amps]
+      description: Returns the coil current in Amps when the magnet is in persistent mode.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/get_heater_current:
+    get:
+      tags:
+        - Intelligent Power Supply
+      summary: Get the IPS heater current [Amps]
+      description: Returns the heater current in Amps.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_setpoint_current:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary:  Set the setpoint current [Amps] 
+      description: Sets the IPS setpoint (target) current in Amps.
+      produces:
+        - plain/text
+      parameters:
+        - name: setpoint_current
+          in: query
+          description: Setpoint current in Amps to 3 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ips120/set_sweep_rate_current:
+    put:
+      tags:
+        - Intelligent Power Supply
+      summary:  Set the sweep rate current [Amps/min] 
+      description: Sets the IPS sweep rate current in Amps/min. 
+      produces:
+        - plain/text
+      parameters:
+        - name: sweep_rate_current
+          in: query
+          description: Sweep rate current in Amps/min to 3 decimal places.
+          required: true
+          default: 0.1
+          type: number
+          format: float
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.

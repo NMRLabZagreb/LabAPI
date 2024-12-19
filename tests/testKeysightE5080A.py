@@ -2,7 +2,7 @@
 
 """
 
-Wrapper for the serial (USB) communication with Keysight E5080A VNA.
+Tests for the serial (USB) communication with Keysight E5080A VNA.
 
 """
 
@@ -25,8 +25,7 @@ __version__ = "v0.1"
 
 import unittest
 import sys
-sys.path.append('../src/modules')
-from pyKeysightE5080A import KeysightE5080A
+from ..src.flaskr.modules.pyKeysightE5080A import KeysightE5080A
 
 class TestAllGetterTypes(unittest.TestCase):
     """

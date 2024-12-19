@@ -58,18 +58,18 @@ def swagger_constructor():
     '''
     # Open and read base.yaml
     with open('flaskr/static/swagger/base.yaml', 'r') as base_file:
-        swagger_string = base_file.read()+'\n'
+        swagger_base = base_file.read()+'\n'
 
     # Add each device only if device.yaml exists
+    swagger_tags = 'tags:\n'
+    swagger_paths = 'paths:\n'
     for device, properties in AVAILABLE_DEVICES.items():
-        if os.path.exists(os.path.abspath(f'flaskr/static/swagger/{device}.yaml')):
-            swagger_string += f'tags:\n'
-            swagger_string += f'  - name: {properties["name"]}\n'
-            swagger_string += f'    description: {properties["description"]}\n'
-            swagger_string += f'paths:\n'
+        if os.path.exists(os.path.abspath(f'flaskr/static/swagger/{device}.yaml')):     
+            swagger_tags += f'  - name: {properties["name"]}\n'
+            swagger_tags += f'    description: {properties["description"]}\n'
             with open(f'flaskr/static/swagger/{device}.yaml') as device_file:
-                swagger_string += device_file.read()
+                swagger_paths += device_file.read()
     
     # Finally, write merged swagger.yaml to disk
     with open(f'flaskr/static/swagger/swagger.yaml', 'w') as output_file:
-        output_file.write(swagger_string)
+        output_file.write(swagger_base + swagger_tags + swagger_paths)
