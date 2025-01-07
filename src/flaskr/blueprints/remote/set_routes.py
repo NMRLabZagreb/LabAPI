@@ -57,8 +57,8 @@ def set_routes(device, properties):
         elif request.method == 'POST':
             # For POST call forward request URL, HTTP headers and JSON payload
             request_url = request_url_template + path
-            response = requests.put(request_url, headers=request.headers, json=request.json)
-            return response.json, response.status_code
+            response = requests.post(request_url, headers=request.headers, data=request.data)
+            return jsonify(response.json()), response.status_code
         
     # Return a blueprint to register in the Flask app        
     return blueprint
