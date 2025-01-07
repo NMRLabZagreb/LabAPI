@@ -4,7 +4,10 @@ resources:
     device: KeysightE5080A
     filename: pyvisa-sim/KeysightE5080A.yaml
 
-resources:
   ASRL9::INSTR:
     device: IPS120
     filename: pyvisa-sim/IPS120.yaml
+
+  ASRL6::INSTR:
+    device: Lakeshore336
+    filename: pyvisa-sim/Lakeshore336.yaml
