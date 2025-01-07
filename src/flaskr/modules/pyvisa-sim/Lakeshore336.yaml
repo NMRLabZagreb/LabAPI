@@ -1,0 +1,75 @@
+spec: 1.0
+devices:
+  Lakeshore336:
+    eom:
+      USB INSTR:
+        q: "\r\n"
+        r: "\n"
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+
+    error:
+      response:
+        command_error: -1
+      status_register:
+        - q: "*ESR?"
+          command_error: -32
+          query_error: -4
+
+    dialogues:
+      - q: "KDRG?"
+        r: 6.66
+      - q: "SDRG?"
+        r: 7.77
+      - q: "HTR?"
+        r: 8.88
+      - q: "PID?"
+        r: 1,2,3
+      - q: "PID 1,{:.2f},{:.2f},{:.2f}" 
+        r: OK
+
+    properties:  
+      setpoint:
+        default: 100
+        specs:
+          min: 0
+          max: 400
+          type: float
+        getter:
+          q: "SETP? 1"
+          r: "{:.2f}"
+        setter:
+          q: ":SETP 1,{:.2f}"
+      heater_range:
+        default: 0
+        specs:
+          type: int
+          valid: [0, 1, 2, 3]
+        getter:
+          q: "RANGE?"
+          r: "{:d}"
+        setter:
+          q: "RANGE {:d}"
+      ramp_rate:
+        default: 0
+        specs:
+          min: 0
+          max: 100
+          type: float
+        getter:
+          q: "RAMP? 1"
+          r: "{:.2f}"
+        setter:
+          q: "RAMP 1,{:.2f}"
+      manual_output:
+        default: 0
+        specs:
+          min: 0
+          max: 100
+          type: float
+        getter:
+          q: "MOUT? 1"
+          r: "{:.2f}"
+        setter:
+          q: "MOUT 1,{:.2f}"

@@ -1,0 +1,339 @@
+  /lakeshore336/get_temperature:
+    get:
+      tags:
+        - Lakeshore 336
+      summary: Get temperature for channel [X]
+      description: Returns temperature in Kelvin for channel [control_channel].
+      produces:
+        - plain/text
+      parameters:
+        - name: control_channel
+          in: query
+          description: Character denoting a control channel  [A, B, C, D]
+          required: true
+          type: string
+          enum: [A, B, C, D]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_sensor:
+    get:
+      tags:
+        - Lakeshore 336
+      summary: Get sensor reading for channel [X]
+      description: Returns the sensor reading in Ohms for channel [control_channel].
+      produces:
+        - plain/text
+      parameters:
+        - name: control_channel
+          in: query
+          description: Character denoting a control channel [A, B, C, D]
+          required: true
+          type: string
+          enum: [A, B, C, D]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_setpoint:
+    get:
+      tags:
+        - Lakeshore 336
+      summary: Get the setpoint for control loop [X]
+      description: Returns the setpoint in Kelvin for control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_heater_range:
+    get:
+      tags:
+        - Lakeshore 336
+      summary:  Get heater range
+      description: "Returns the heater range as heater range index: 0 - Off, 1 - Low, 2 - Medium, 3 - High"
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_heater_percent:
+    get:
+      tags:
+        - Lakeshore 336
+      summary: Get heater power (range) percentage
+      description: Returns a heater power as a percentage of a current heater range.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_heater_percent_fullrange:
+    get:
+      tags:
+        - Lakeshore 336
+      summary:  Get heater power (full) percentage
+      description: Returns a heater power as a percentage of the total power.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_PID:
+    get:
+      tags:
+        - Lakeshore 336
+      summary:  Get PID parameters for control loop [X]
+      description: Returns a [P, I, D] list of PID parameters for a given control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_ramp_rate:
+    get:
+      tags:
+        - Lakeshore 336
+      summary:  Get the ramp rate for control loop [X]
+      description: Returns the ramp rate in Kelvin/min for a given control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/get_manual_out:
+    get:
+      tags:
+        - Lakeshore 336
+      summary:  Get the manual output for control loop [X]
+      description: Returns the manual output (range) precentage for a given control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/set_setpoint:
+    put:
+      tags:
+        - Lakeshore 336
+      summary: Set the setpoint for control loop [X]
+      description: Sets the setpoint in Kelvin for control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: setpoint
+          in: query
+          description: Setpoint temperature in Kelvin
+          required: true
+          default: 1
+          type: number
+          format: float32
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/set_heater_range:
+    put:
+      tags:
+        - Lakeshore 336
+      summary:  Set a heater range.
+      description: "Sets the heater range given a heater range index: 0 - Off, 1 - Low, 2 - Medium, 3 - High"
+      produces:
+        - plain/text
+      parameters:
+        - name: range_index
+          in: query
+          description: Number a heater range index [0 - Off, 1 - Low, 2 - Medium, 3 - High]
+          required: true
+          default: 1
+          type: integer
+          enum: [0, 1, 2, 3]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/set_PID:
+    put:
+      tags:
+        - Lakeshore 336
+      summary:  Set PID parameters for control loop [X]
+      description: Sets PID parameters given P, I, and D for a given control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: P
+          in: query
+          description: Proportinal (P) parameter
+          required: true
+          default: 5.0
+          type: number
+          format: float
+        - name: I
+          in: query
+          description: Integral (I) parameter
+          required: true
+          default: 5.0
+          type: number
+          format: float
+        - name: P
+          in: query
+          description: Derivative (D) parameter
+          required: true
+          default: 0.0
+          type: number
+          format: float
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/set_ramp_rate:
+    put:
+      tags:
+        - Lakeshore 336
+      summary:  Set the ramp rate for control loop [X]
+      description: Set the ramp rate in Kelvin/min for a given control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: ramp_rate
+          in: query
+          description: Ramp rate in Kelvin/min
+          required: true
+          default: 1
+          type: number
+          format: float32
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /lakeshore336/set_manual_out:
+    put:
+      tags:
+        - Lakeshore 336
+      summary:  Set the manual output for control loop [X]
+      description: Sets the manual output (range) precentage for a given control loop [control_loop].
+      produces:
+        - plain/text
+      parameters:
+        - name: manual_out
+          in: query
+          description: Manual output as a percentage of a current heater range
+          required: true
+          default: 1
+          type: number
+          format: float32
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 1
+          type: integer
+          enum: [1, 2]
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+    

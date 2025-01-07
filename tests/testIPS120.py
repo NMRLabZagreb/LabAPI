@@ -11,7 +11,7 @@ __email__ = "ivan.jakovac2@gmail.com"
 __version__ = "v0.1"
 
 
-#  Copyright (C) 2020-2022 Ivan Jakovac
+#  Copyright (C) 2020-2025 Ivan Jakovac
 #
 #  This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
 #  License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
