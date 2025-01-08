@@ -29,7 +29,7 @@ import configparser
 
 
 class Lakeshore336:
-    def __init__(self, address: str = None, device_present: bool = False) -> None:
+    def __init__(self, address: str = None, device_present: bool = True) -> None:
         """
         Class to wrap communications with Lakeshore 336 temperature controller
             
@@ -57,6 +57,10 @@ class Lakeshore336:
 
         # Initialize communication
         self.ls336 = self.rm.open_resource(address, read_termination = '\n', write_termination = '\r\n')
+        # Set non-typical parameters
+        self.ls336.baud_rate = 57600
+        self.ls336.data_bits = 7
+        self.ls336.parity = visa.constants.Parity.odd
 
     # SIMPLE GETTERS (one value) 
     def get_temperature(self, control_channel:str = 'A') -> float:
@@ -71,74 +75,74 @@ class Lakeshore336:
         """
         return float(self.ls336.query(f'SRDG? {control_channel}'))
     
-    def get_setpoint(self, control_loop:int = 1) -> float:
+    def get_setpoint(self, control_loop:int = 2) -> float:
         """
         This method gets the active setpoint on control loop control_loop
         """       
         return float(self.ls336.query(f'SETP? {control_loop:d}'))
     
-    def get_heater_range(self):
+    def get_heater_range(self, control_loop:int = 2):
         """
         This method gets the heater range index: 0 Off, 1 Low, 2 Medium, 3 High.
         """
-        return int(self.ls336.query(f'RANGE?'))
+        return int(self.ls336.query(f'RANGE? {control_loop:d}')) or 0
     
-    def get_heater_percent(self):
+    def get_heater_percent(self, control_loop:int = 2):
         """
         This method gets the heater output in percentage of the current range.
         """        
-        return float(self.ls336.query(f'HTR?'))
+        return float(self.ls336.query(f'HTR? {control_loop:d}'))
     
-    def get_heater_percent_fullrange(self):
+    def get_heater_percent_fullrange(self, control_loop:int = 2):
         """
         This method gets the heater output in percentage of the total heater power.
         """
-        heater_range = self.get_heater_range()
-        heater_percent = self.get_heater_percent()
+        heater_range = self.get_heater_range(control_loop)
+        heater_percent = self.get_heater_percent(control_loop)
 
         # Max low is 1%, max medium is 10%, max high is 100%
         heater_fullrange = 0.001 * 10**heater_range
         return heater_percent*heater_fullrange
 
-    def get_PID(self, control_loop:int = 1) -> float:
+    def get_PID(self, control_loop:int = 2) -> float:
         """
         This method gets the P, I, and D values for the control loop control_loop
         """       
         raw_response = self.ls336.query(f'PID? {control_loop:d}')
         return [float(value) for value in raw_response.split(',')]
 
-    def get_ramp_rate(self, control_loop:int = 1) -> float:
+    def get_ramp_rate(self, control_loop:int = 2) -> float:
         """
         This method gets the ramp rate [K/min] for the control loop control_loop.
         """
-        return float(self.ls336.query(f'RAMP? {control_loop:d}'))
+        return float(self.ls336.query(f'RAMP? {control_loop:d}').split(',')[1])
     
-    def get_manual_output(self, control_loop:int = 1) -> float:
+    def get_manual_output(self, control_loop:int = 2) -> float:
         """
         This method gets the ramp rate [K/min] for the control loop control_loop.
         """
         return float(self.ls336.query(f'MOUT? {control_loop:d}'))
 
     # SIMPLE SETTERS
-    def set_setpoint(self, setpoint:float, control_loop:int = 1):
+    def set_setpoint(self, setpoint:float, control_loop:int = 2):
         """
         This method sets the active setpoint on control loop control_loop
         """
         self.ls336.write(f'SETP {control_loop:d},{setpoint:.2f}')
 
-    def set_heater_range(self, range_index: int):
+    def set_heater_range(self, range_index: int, control_loop:int = 2):
         """
         This method sets the heater range given index: 0 Off, 1 Low, 2 Medium, 3 High.
         """
-        self.ls336.write(f'RANGE {range_index:d}')
+        self.ls336.write(f'RANGE {control_loop:d},{range_index:d}')
 
-    def set_PID(self, P:float, I:float, D:float, control_loop:int = 1) :
+    def set_PID(self, P:float, I:float, D:float, control_loop:int = 2) :
         """
         This method gets the P, I, and D values for the control loop control_loop
         """       
-        self.ls336.write(f'PID {control_loop:d},{P:.2f},{I:.2f},{D:.2f}')
+        self.ls336.write(f'PID {control_loop:d},{P:.1f},{I:.1f},{D:.1f}')
 
-    def set_ramp_rate(self, ramp_rate:float, control_loop:int = 1):
+    def set_ramp_rate(self, ramp_rate:float, control_loop:int = 2):
         """
         This method sets the ramp rate [K/min] for the control loop control_loop.
         """
@@ -148,7 +152,7 @@ class Lakeshore336:
             # Turn off ramping
             self.ls336.write(f'RAMP {control_loop:d},0,0')
 
-    def set_manual_output(self, manual_out:float, control_loop:int = 1):
+    def set_manual_output(self, manual_out:float, control_loop:int = 2):
         """
         This method gets the ramp rate [K/min] for the control loop control_loop.
         """

@@ -37,39 +37,39 @@ class TestAllGetterTypes(unittest.TestCase):
 
     # SIMPLE GETTERS (one value)
     def test_get_temperature(self):
-        return_value = self.ls336.get_temperature(control_channel=1)
+        return_value = self.ls336.get_temperature(control_channel='A')
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
 
     def test_get_sensor(self):
-        return_value = self.ls336.get_sensor(control_channel=1)
+        return_value = self.ls336.get_sensor(control_channel=2)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
     
     def test_get_setpoint(self):
-        return_value = self.ls336.get_setpoint(control_loop=1)
+        return_value = self.ls336.get_setpoint(control_loop=2)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
         
     def test_get_heater_range(self):
-        return_value = self.ls336.get_heater_range()
+        return_value = self.ls336.get_heater_range(control_loop=2)
         self.assertIsInstance(return_value, int, f'Not an integer but {type(return_value)}')
     
     def test_get_heater_percent(self):
-        return_value = self.ls336.get_heater_percent()
-        self.assertIsInstance(return_value, int, f'Not a integer but {type(return_value)}')
+        return_value = self.ls336.get_heater_percent(control_loop=2)
+        self.assertIsInstance(return_value, float, f'Not a integer but {type(return_value)}')
     
     def test_get_heater_percent_fullrange(self):
-        return_value = self.ls336.get_heater_percent_fullrange()
+        return_value = self.ls336.get_heater_percent_fullrange(control_loop=2)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
 
     def test_get_PID(self):
-        return_value = self.ls336.get_PID
+        return_value = self.ls336.get_PID(control_loop=2)
         self.assertIsInstance(return_value, list, f'Not a list but {type(return_value)}')
 
     def test_get_ramp_rate(self):
-        return_value = self.ls336.get_ramp_rate()
+        return_value = self.ls336.get_ramp_rate(control_loop=2)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
 
     def test_get_manual_output(self):
-        return_value = self.ls336.get_manual_output()
+        return_value = self.ls336.get_manual_output(control_loop=2)
         self.assertIsInstance(return_value, float, f'Not a float but {type(return_value)}')
 
 class TestAllSetters(unittest.TestCase):
@@ -81,28 +81,28 @@ class TestAllSetters(unittest.TestCase):
 
     def test_set_setpoint(self):
         test_value = 281.
-        self.ls336.set_setpoint(test_value, control_loop=1)
-        self.assertEqual(self.ls336.get_setpoint(control_loop=1), test_value)
+        self.ls336.set_setpoint(test_value, control_loop=2)
+        self.assertEqual(self.ls336.get_setpoint(control_loop=2), test_value)
 
     def test_set_heater_range(self):
         test_value = 1
-        self.ls336.set_heater_range(range_index=test_value)
-        self.assertEqual(self.ls336.get_heater_range(), test_value)
+        self.ls336.set_heater_range(control_loop=2, range_index=test_value)
+        self.assertEqual(self.ls336.get_heater_range(control_loop=2), test_value)
 
     def test_set_PID(self):
         test_value = [10, 5, 2]
-        self.ls336.set_PID(*test_value, control_loop=1)
-        self.assertEqual(self.ls336.get_PID(control_loop=1), test_value)
+        self.ls336.set_PID(*test_value, control_loop=2)
+        self.assertEqual(self.ls336.get_PID(control_loop=2), test_value)
 
     def test_set_ramp_rate(self):
         test_value = 2
-        self.ls336.set_ramp_rate(test_value, control_loop=1)
-        self.assertEqual(self.ls336.get_ramp_rate(control_loop=1), test_value)
+        self.ls336.set_ramp_rate(test_value, control_loop=2)
+        self.assertEqual(self.ls336.get_ramp_rate(control_loop=2), test_value)
 
     def test_set_manual_out(self):
         test_value = 5
-        self.ls336.set_manual_output(test_value, control_loop=1)
-        self.assertEqual(self.ls336.get_manual_output(control_loop=1), test_value)
+        self.ls336.set_manual_output(test_value, control_loop=2)
+        self.assertEqual(self.ls336.get_manual_output(control_loop=2), test_value)
         
 if __name__=="__main__":
     unittest.main()
