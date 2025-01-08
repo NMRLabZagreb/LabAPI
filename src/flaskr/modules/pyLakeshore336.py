@@ -29,7 +29,7 @@ import configparser
 
 
 class Lakeshore336:
-    def __init__(self, address: str = None, device_present: bool = True) -> None:
+    def __init__(self, address: str = None, device_present: bool = False) -> None:
         """
         Class to wrap communications with Lakeshore 336 temperature controller
             
