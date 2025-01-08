@@ -203,7 +203,7 @@ class localIPS120():
             
         @blueprint.route('/set_go_to_setpoint', methods=['GET', 'PUT', 'POST'])
         def set_go_to_setpoint():
-            response_value = self.ips.get_is_going_to_setpoint()
+            response_value = self.ips.set_go_to_setpoint()
             if request.method == 'POST':
                 return jsonify({}), 200
             elif request.method == 'GET' or request.method == 'PUT':

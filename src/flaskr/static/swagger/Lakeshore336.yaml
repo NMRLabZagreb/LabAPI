@@ -55,7 +55,7 @@
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -73,6 +73,14 @@
       description: "Returns the heater range as heater range index: 0 - Off, 1 - Low, 2 - Medium, 3 - High"
       produces:
         - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 2
+          type: integer
+          enum: [1, 2]
       responses:
         200:
           description: Success.
@@ -88,6 +96,14 @@
       description: Returns a heater power as a percentage of a current heater range.
       produces:
         - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 2
+          type: integer
+          enum: [1, 2]
       responses:
         200:
           description: Success.
@@ -103,6 +119,14 @@
       description: Returns a heater power as a percentage of the total power.
       produces:
         - plain/text
+      parameters:
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 2
+          type: integer
+          enum: [1, 2]
       responses:
         200:
           description: Success.
@@ -110,7 +134,7 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  /lakeshore336/get_PID:
+  /lakeshore336/get_pid:
     get:
       tags:
         - Lakeshore 336
@@ -123,7 +147,7 @@
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -146,7 +170,7 @@
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -156,7 +180,7 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  /lakeshore336/get_manual_out:
+  /lakeshore336/get_manual_output:
     get:
       tags:
         - Lakeshore 336
@@ -169,7 +193,7 @@
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -192,14 +216,14 @@
           in: query
           description: Setpoint temperature in Kelvin
           required: true
-          default: 1
+          default: 0
           type: number
           format: float32
         - name: control_loop
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -222,9 +246,16 @@
           in: query
           description: Number a heater range index [0 - Off, 1 - Low, 2 - Medium, 3 - High]
           required: true
-          default: 1
+          default: 0
           type: integer
           enum: [0, 1, 2, 3]
+        - name: control_loop
+          in: query
+          description: Number denoting a control loop [1, 2]
+          required: true
+          default: 2
+          type: integer
+          enum: [1, 2]
       responses:
         200:
           description: Success.
@@ -232,7 +263,7 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  /lakeshore336/set_PID:
+  /lakeshore336/set_pid:
     put:
       tags:
         - Lakeshore 336
@@ -255,7 +286,7 @@
           default: 5.0
           type: number
           format: float
-        - name: P
+        - name: D
           in: query
           description: Derivative (D) parameter
           required: true
@@ -266,7 +297,7 @@
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -289,14 +320,14 @@
           in: query
           description: Ramp rate in Kelvin/min
           required: true
-          default: 1
+          default: 0
           type: number
           format: float32
         - name: control_loop
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
@@ -306,7 +337,7 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  /lakeshore336/set_manual_out:
+  /lakeshore336/set_manual_output:
     put:
       tags:
         - Lakeshore 336
@@ -315,18 +346,18 @@
       produces:
         - plain/text
       parameters:
-        - name: manual_out
+        - name: manual_output
           in: query
           description: Manual output as a percentage of a current heater range
           required: true
-          default: 1
+          default: 0
           type: number
           format: float32
         - name: control_loop
           in: query
           description: Number denoting a control loop [1, 2]
           required: true
-          default: 1
+          default: 2
           type: integer
           enum: [1, 2]
       responses:
