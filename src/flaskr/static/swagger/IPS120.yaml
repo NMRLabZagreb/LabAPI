@@ -276,7 +276,7 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  /ips120/set_magnetic_field:
+  /ips120/set_magnet_field:
     put:
       tags:
         - Intelligent Power Supply
@@ -285,7 +285,7 @@
       produces:
         - plain/text
       parameters:
-        - name: magnetic_field
+        - name: magnet_field
           in: query
           description: Setpoint magnetic field in Teslas to 4 decimal places.
           required: true
@@ -306,7 +306,7 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  /ips120/set_persistent_magnetic_field:
+  /ips120/set_persistent_magnet_field:
     put:
       tags:
         - Intelligent Power Supply
@@ -315,7 +315,7 @@
       produces:
         - plain/text
       parameters:
-        - name: magnetic_field
+        - name: magnet_field
           in: query
           description: Setpoint magnetic field in Teslas to 4 decimal places.
           required: true
