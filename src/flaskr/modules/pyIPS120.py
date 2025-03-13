@@ -275,52 +275,6 @@ class IPS120:
         self.ips.query('C0')
 
     ### HIGHER LEVEL COMMANDS ###
-    def go_to_current_field(self):
-        """
-        This method sets the output current/field to the persistent current/field and turns on the heater
-        """
-        # Ensure the heater is OFF, and we are on HOLD
-        if self.get_persistent_field() == self.get_output_field():
-            self.set_heater_off()
-        if not self.get_is_on_hold():
-            self.set_hold()
-
-        # Get the current field and set setpoint
-        current_field = self.get_persistent_field()
-        self.set_setpoint_field(current_field)
-
-        # Go to current setpoint
-        self.set_go_to_setpoint()
-        while self.get_output_field() != current_field:
-            time.sleep(1)
-        
-        # Turn on the heater
-        self.set_hold()
-        self.set_heater_on() # Heater ON checks if IPS == magnet
-        time.sleep(60)
-    
-    def go_to_persistent_mode(self):
-        """
-        This method turns off the heater and lowers the output current to zero (persistent mode).
-        """
-        # Wait for output to reach the setpoint
-        while self.get_output_field() != self.get_setpoint_field:
-            time.sleep(1)
-
-        # Check is output/setpoint is equal to the persistent field before
-        # turning off the heater
-        if self.get_output_field() == self.get_persistent_field():
-            # Turn off the heater
-            self.set_hold()
-            self.set_heater_off()
-            time.sleep(60)
-
-            # Go to persistent mode and clamp the output
-            self.set_go_to_zero()
-            while self.get_output_field != 0:
-                time.sleep(1)
-            self.set_clamped()
-
     def set_magnet_field(self, magnet_field: float, ramp_rate: float = None):
         """
         This method changes the field in magnet but does NOT go to persistent mode. This method can be used for
@@ -328,20 +282,39 @@ class IPS120:
         """
         if ramp_rate:
             self.set_sweep_rate_field(ramp_rate)
+        time.sleep(1)
 
-        # Go to the current field
-        if self.get_persistent_field() != self.get_output_current() and not self.get_is_heater_on():
-            self.go_to_current_field()
+        # Go to the current field and turn on heater
+        if self.get_persistent_field() != self.get_output_field() and not self.get_is_heater_on():
+            self.set_setpoint_field(self.get_persistent_field)
+            self.set_go_to_setpoint()
+            while self.get_persistent_field() != self.get_output_field():
+                time.sleep(5)
+            self.set_hold()
+            self.set_heater_on()
+            time.sleep(60)
 
         # Go to setpoint field
         self.set_setpoint_field(magnet_field)
         self.set_go_to_setpoint()
-        while self.get_output_field() != magnet_field:
-            time.sleep(1)
+        while self.get_output_field() != self.get_setpoint_field():
+            time.sleep(5)
+        self.set_hold()
 
     def set_persistent_magnet_field(self, magnet_field: float, ramp_rate: float = None):
         """
         This method changes the field in magnet and enters persistent mode.
         """
-        self.set_magnet_field(magnet_field, ramp_rate)
-        self.go_to_persistent_mode()
+        current_field = self.get_persistent_field()
+        current_setpoint = -10000
+        while abs(current_setpoint - magnet_field) > 0.05:
+            current_setpoint = magnet_field - (current_field - magnet_field) / 2
+            self.set_magnet_field(magnet_field, ramp_rate)
+            current_field = self.get_output_field()
+            time.sleep(1)
+        self.set_magnet_field(magnet_field)
+        self.set_heater_off()
+        time.sleep(60)
+        self.set_go_to_zero()
+        self.set_hold()
+        self.set_clamped()
