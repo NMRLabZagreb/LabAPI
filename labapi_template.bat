@@ -1,4 +1,8 @@
 @echo off
+REM Kill server if running
+call taskkill /f /im pythonw.exe
+call taskkill /f /im nginx.exe
+
 REM Change the following paths
 REM Activate Python environment
 call "D:/path-to-LabAPI/.venv/Scripts/activate.bat"
