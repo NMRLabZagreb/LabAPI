@@ -44,7 +44,7 @@ def create_app():
     app.register_blueprint(swagger_blueprint())
 
     # Dictionary which holds local devices:
-    local_devices = dict()
+    app.local_devices = dict()
 
     for device, properties in AVAILABLE_DEVICES.items():
         if properties['host'] in ['localhost', '127.0.0.1'] or f"{properties['host']}:{properties['port']}" == THIS_PC:
@@ -53,8 +53,8 @@ def create_app():
             device_module = import_module(f'.modules.py{device}', package = __package__)
             blueprint_module = import_module(f'.blueprints.local.{device}', package = __package__)
             # Instantiate device: if in debug mode - device will use mock VISA
-            local_devices[device] = getattr(device_module, f'{device}')(device_present = properties['device_present'])
-            local_device_blueprint = getattr(blueprint_module, f'local{device}')(local_devices[device])
+            app.local_devices[device] = getattr(device_module, f'{device}')(device_present = properties['device_present'])
+            local_device_blueprint = getattr(blueprint_module, f'local{device}')(app.local_devices[device])
             app.register_blueprint(local_device_blueprint.set_routes())
         else:
             # If HOST is remote server, use remote modules forward API calls to respective IPs

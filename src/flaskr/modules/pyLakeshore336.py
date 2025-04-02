@@ -125,12 +125,17 @@ class Lakeshore336:
         heater_fullrange = 0.001 * 10**heater_range
         return heater_percent*heater_fullrange
 
-    def get_PID(self, control_loop:int = 2) -> float:
+    def get_PID(self, control_loop:int = 2, pid = None) -> float:
         """
         This method gets the P, I, and D values for the control loop control_loop
         """       
         raw_response = self.ls336.query(f'PID? {control_loop:d}')
-        return [float(value) for value in raw_response.split(',')]
+        response = [float(value) for value in raw_response.split(',')]
+        response_mapping = {'P': 0, 'I': 1, 'D': 2}
+        if pid is None:
+            return response
+        else:
+            return response[response_mapping[pid]]
 
     def get_ramp_rate(self, control_loop:int = 2) -> float:
         """
