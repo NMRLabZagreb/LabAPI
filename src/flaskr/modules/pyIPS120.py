@@ -41,24 +41,17 @@ class IPS120:
         # Handle resource address
         if address is not None:
             # Save configuration
+            self.address = address
             config['IPS120']['address'] = address
         else:
             if 'IPS120' in config and 'address' in config['IPS120']:
-                address = config['IPS120']['address']
+                self.address = config['IPS120']['address']
             else:
                 raise Exception('Resource address not provided!')
 
-        
-        if device_present:
-            self.rm = visa.ResourceManager()
-        else:
-            # Mock VISA
-            self.rm = visa.ResourceManager(f'{path}/pyvisa-sim.yaml@sim')
-
-        # Initialize communication
-        self.ips = self.rm.open_resource(address, read_termination = '\r\n', write_termination = '\r\n')
-        # Set termination to /r/n
-        self.ips.write('Q2')
+        # Test a connection
+        self.device_present = device_present
+        self.check_and_reset_communication()
 
         # Define status codes
         self.system_status_m = {0: 'Normal',
@@ -80,6 +73,36 @@ class IPS120:
                               2: 'Off, magnet at field',
                               5: 'Heater fault',
                               8: 'No switch present'}
+        
+    # Connector
+    def connect(self):
+        if self.device_present:
+            self.rm = visa.ResourceManager()
+        else:
+            # Mock VISA
+            self.rm = visa.ResourceManager(f'{os.path.dirname(__file__)}/pyvisa-sim.yaml@sim')
+        # Initialize communication
+        self.ips = self.rm.open_resource(self.address, read_termination = '\r\n', write_termination = '\r\n')
+        # Set non-typical parameters
+        # Set termination to /r/n
+        self.ips.write('Q2')
+
+    # Test connection to the device and reconnect if necessary
+    def check_and_reset_communication(self):
+        retries = 5
+        connected = False
+        while not connected:
+            try:
+                self.connect()
+                self.ips.query('*IDN?')
+            except:
+                # If connection fails wait 5 seconds and try again
+                time.sleep(5)
+                retries -= 1
+                # After 5 retries throw an exception
+                if not retries:
+                    raise Exception('Reseting the connection failed (5 retries). Check hardware connection.')
+
 
     # SIMPLE GETTERS (one value)
     def get_output_current(self) -> float:

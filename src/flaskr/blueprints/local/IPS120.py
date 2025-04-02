@@ -37,7 +37,8 @@ class localIPS120():
         
     # Authorization check
     @blueprint.before_request
-    def check_api_key():
+    def check_api_key_and_communication(self):
+        self.ips.check_and_reset_communication()
         if ('x-api-key' not in request.headers.keys(lower=True)) or (sha256(request.headers.get('X-API-Key').encode()).hexdigest() != API_KEY):
             return jsonify({'error': 'Unauthorized'}), 401
     

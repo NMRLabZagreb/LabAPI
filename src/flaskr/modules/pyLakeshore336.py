@@ -26,7 +26,7 @@ __version__ = "v0.1"
 import pyvisa as visa
 import os
 import configparser
-
+import time
 
 class Lakeshore336:
     def __init__(self, address: str = None, device_present: bool = False) -> None:
@@ -41,26 +41,47 @@ class Lakeshore336:
         # Handle resource address
         if address is not None:
             # Save configuration
+            self.address = address
             config['Lakeshore336']['address'] = address
         else:
             if 'Lakeshore336' in config and 'address' in config['Lakeshore336']:
-                address = config['Lakeshore336']['address']
+                self.address = config['Lakeshore336']['address']
             else:
                 raise Exception('Resource address not provided!')
 
-        
-        if device_present:
+        self.device_present = device_present
+        # Initialize communication
+        self.check_and_reset_communication()
+
+    # Connector
+    def connect(self):
+        if self.device_present:
             self.rm = visa.ResourceManager()
         else:
             # Mock VISA
-            self.rm = visa.ResourceManager(f'{path}/pyvisa-sim.yaml@sim')
-
+            self.rm = visa.ResourceManager(f'{os.path.dirname(__file__)}/pyvisa-sim.yaml@sim')
         # Initialize communication
-        self.ls336 = self.rm.open_resource(address, read_termination = '\n', write_termination = '\r\n')
+        self.ls366 = self.rm.open_resource(self.address, read_termination = '\r\n', write_termination = '\r\n')
         # Set non-typical parameters
         self.ls336.baud_rate = 57600
         self.ls336.data_bits = 7
         self.ls336.parity = visa.constants.Parity.odd
+
+    # Test connection to the device and reconnect if necessary
+    def check_and_reset_communication(self):
+        retries = 5
+        connected = False
+        while not connected:
+            try:
+                self.connect()
+                self.ips.query('*IDN?')
+            except:
+                # If connection fails wait 5 seconds and try again
+                time.sleep(5)
+                retries -= 1
+                # After 5 retries throw an exception
+                if not retries:
+                    raise Exception('Reseting the connection failed (5 retries). Check hardware connection.')
 
     # SIMPLE GETTERS (one value) 
     def get_temperature(self, control_channel:str = 'A') -> float:
