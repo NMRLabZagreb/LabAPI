@@ -36,10 +36,10 @@ class localLakeshore336():
     def __init__(self, device_present: bool = False):
         # Instantiate a VISA resource; KeysightE5080A class implements various VISA queries as class methods
         self.ls = Lakeshore336(device_present=device_present)
-        self.temperature_gauge = Gauge('temperature', 'Probe and VTI temperature in Kelvin', ['A', 'B', 'C', 'D'])
-        self.setpoint_gauge = Gauge('setpoint', 'Temperature setpoint in Kelvin', ['1', '2'])
-        self.heater_gauge = Gauge('heater', 'Heater percentage', ['1', '2'])
-        self.heater_range_enum = Enum('range', 'Heater range', ['1', '2'], states=[0, 1, 2, 3])
+        self.temperature_gauge = Gauge('temperature', 'Probe and VTI temperature in Kelvin', ['channel'])
+        self.setpoint_gauge = Gauge('setpoint', 'Temperature setpoint in Kelvin', ['loop'])
+        self.heater_gauge = Gauge('heater', 'Heater percentage', ['loop'])
+        self.heater_range_enum = Enum('range', 'Heater range', ['loop'], states=['0', '1', '2', '3'])
 
     # Authorization check
     @blueprint.before_request
@@ -56,11 +56,11 @@ class localLakeshore336():
         def get_temperature():
             if request.method == 'POST':
                 response_value = self.ls.get_temperature(str(request.json['control_channel']))
-                self.temperature_gauge.labels(str(request.json['control_channel'])).set(response_value)
+                self.temperature_gauge.labels(request.json['control_channel']).set(response_value)
                 return jsonify({'temperature': response_value}), 200
             elif request.method == 'GET':
                 response_value = self.ls.get_temperature(str(request.args['control_channel']))
-                self.temperature_gauge.labels(str(request.args['control_channel'])).set(response_value)
+                self.temperature_gauge.labels(request.args['control_channel']).set(response_value)
                 return str(response_value), 200
             
             
@@ -77,11 +77,11 @@ class localLakeshore336():
         def get_setpoint():
             if request.method == 'POST':
                 response_value = self.ls.set_setpoint(int(request.json['control_loop']))
-                self.setpoint_gauge.labels(str(request.json['control_loop'])).set(response_value)
+                self.setpoint_gauge.labels(request.json['control_loop']).set(response_value)
                 return jsonify({'setpoint': response_value}), 200
             elif request.method == 'GET':
                 response_value = self.ls.get_setpoint(int(request.args['control_loop']))
-                self.setpoint_gauge.labels(str(request.args['control_loop'])).set(response_value)
+                self.setpoint_gauge.labels(request.args['control_loop']).set(response_value)
                 return str(response_value), 200
 
         @blueprint.route('/get_heater_range', methods=['GET', 'POST'])
@@ -89,22 +89,22 @@ class localLakeshore336():
             sdict = {0: 'Off', 1: 'Low', 2: 'Medium', 3: 'High'}
             if request.method == 'POST':
                 response_value = self.ls.get_heater_range(int(request.json['control_loop']))
-                self.heater_range_enum.labels(str(request.json['control_loop'])).state(response_value)
+                self.heater_range_enum.labels(request.json['control_loop']).state(str(response_value))
                 return jsonify({'range_index': response_value}), 200
             elif request.method == 'GET':
                 response_value = self.ls.get_heater_range(int(request.args['control_loop']))
-                self.heater_range_enum.labels(str(request.args['control_loop'])).state(response_value)
+                self.heater_range_enum.labels(request.args['control_loop']).state(str(response_value))
                 return str(response_value), 200
 
         @blueprint.route('/get_heater_percent', methods=['GET', 'POST'])
         def get_heater_percent():
             if request.method == 'POST':
                 response_value = self.ls.get_heater_percent(int(request.json['control_loop']))
-                self.heater_gauge.labels(str(request.json['control_loop'])).set(response_value)
+                self.heater_gauge.labels(request.json['control_loop']).set(response_value)
                 return jsonify({"percent": response_value}), 200
             elif request.method == 'GET':
                 response_value = self.ls.get_heater_percent(int(request.args['control_loop']))
-                self.heater_gauge.labels(str(request.args['control_loop'])).set(response_value)
+                self.heater_gauge.labels(request.args['control_loop']).set(response_value)
                 return str(response_value), 200
     
         @blueprint.route('/get_heater_percent_fullrange', methods=['GET', 'POST'])
