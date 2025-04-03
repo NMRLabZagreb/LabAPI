@@ -34,9 +34,11 @@ class PrometheusWorker:
                                                                                            label_value)}
                             update_metric = gauge.labels(*label_value).set
                             # Add a method call to the list
-                            self.list_of_update_calls.append((update_metric,
+                            self.list_of_update_calls.append([update_metric,
                                                               update_method,
-                                                              update_method_parameters))
+                                                              update_method_parameters,
+                                                              metric['update_interval'],
+                                                              0])
                     # Enum metric follows the same pattern
                     elif metric['type'] == "enum":
                         enum = Enum(metric['name'],
@@ -48,12 +50,16 @@ class PrometheusWorker:
                                 update_method_parameters = {name: value for name, value in zip(metric['label_names'],
                                                                                                label_value)}
                                 update_metric = enum.labels(*label_value).state
-                                self.list_of_update_calls.append((update_metric,
+                                self.list_of_update_calls.append([update_metric,
                                                                   update_method,
-                                                                  update_method_parameters))
+                                                                  update_method_parameters,
+                                                                  metric['update_interval'],
+                                                                  0])
     def run(self):
-        # Run all update calls periodically
+        # Run all update calls periodically (fastest update interval = 5 seconds)
         while self.is_running:
-            for update_metric, update_method, update_method_parameters in self.list_of_update_calls:
-                update_metric(update_method(**update_method_parameters))
+            for i, (update_metric, update_method, update_method_parameters, update_interval, next_update) in enumerate(self.list_of_update_calls):
+                if next_update < time.time():
+                    update_metric(update_method(**update_method_parameters))
+                    self.list_of_update_calls[i][5] = time.time() + update_interval
             time.sleep(5)
