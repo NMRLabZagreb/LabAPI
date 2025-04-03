@@ -26,19 +26,19 @@ __version__ = "v0.1"
 from flask import Blueprint, request, jsonify
 from ...config import API_KEY
 from hashlib import sha256
+from ...modules.pyIPS120 import IPS120
 
 # Blueprint is a global variable
 blueprint = Blueprint('IPS120', __name__, url_prefix='/ips120')
 
 class localIPS120():
-    def __init__(self, device):
+    def __init__(self, device_present: bool = False):
         # Instantiate a VISA resource; IPS120 class implements various VISA queries as class methods
-        self.ips = device
+        self.ips = IPS120(device_present=device_present)
         
     # Authorization check
     @blueprint.before_request
-    def check_api_key_and_communication(self):
-        self.ips.check_and_reset_communication()
+    def check_api_key():
         if ('x-api-key' not in request.headers.keys(lower=True)) or (sha256(request.headers.get('X-API-Key').encode()).hexdigest() != API_KEY):
             return jsonify({'error': 'Unauthorized'}), 401
     

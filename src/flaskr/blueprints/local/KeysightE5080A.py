@@ -26,19 +26,19 @@ __version__ = "v0.1"
 from flask import Blueprint, request, jsonify
 from ...config import API_KEY
 from hashlib import sha256
+from ...modules.pyKeysightE5080A import KeysightE5080A
 
 # Blueprint is a global variable
 blueprint = Blueprint('KeysightE5080A', __name__, url_prefix='/keysighte5080a')
 
 class localKeysightE5080A():
-    def __init__(self, device):
+    def __init__(self, device_present: bool = False):
         # Instantiate a VISA resource; KeysightE5080A class implements various VISA queries as class methods
-        self.VNA = device
+        self.VNA = KeysightE5080A(device_present=device_present)
         
     # Authorization check
     @blueprint.before_request
-    def check_api_key_and_communication(self):
-        self.VNA.check_and_reset_communication()
+    def check_api_key():
         if ('x-api-key' not in request.headers.keys(lower=True)) or (sha256(request.headers.get('X-API-Key').encode()).hexdigest() != API_KEY):
             return jsonify({'error': 'Unauthorized'}), 401
     
