@@ -26,7 +26,6 @@ __version__ = "v0.1"
 import pyvisa as visa
 import os
 import configparser
-import time
 
 class Lakeshore336:
     def __init__(self, address: str = None, device_present: bool = False) -> None:
@@ -61,7 +60,7 @@ class Lakeshore336:
             # Mock VISA
             self.rm = visa.ResourceManager(f'{os.path.dirname(__file__)}/pyvisa-sim.yaml@sim')
         # Initialize communication
-        self.ls366 = self.rm.open_resource(self.address, read_termination = '\r\n', write_termination = '\r\n')
+        self.ls336 = self.rm.open_resource(self.address, read_termination = '\r\n', write_termination = '\r\n')
         # Set non-typical parameters
         self.ls336.baud_rate = 57600
         self.ls336.data_bits = 7
@@ -71,55 +70,61 @@ class Lakeshore336:
     def check_and_reset_communication(self):
         retries = 5
         connected = False
-        while not connected:
+        while not connected and retries:
             try:
                 self.connect()
-                self.ips.query('*IDN?')
+                if self.ls336.query('*IDN?') != '':
+                    connected = True
             except:
-                # If connection fails wait 5 seconds and try again
-                time.sleep(5)
+                # If connection fails try again 
                 retries -= 1
-                # After 5 retries throw an exception
-                if not retries:
-                    raise Exception('Reseting the connection failed (5 retries). Check hardware connection.')
+
+    # Query/Write functions check the communication before querying the device
+    def query(self, argument):
+        self.check_and_reset_communication()
+        return self.ls336.query(argument)
+
+    def write(self, argument):
+        self.check_and_reset_communication()
+        self.ls336.write(argument)
 
     # SIMPLE GETTERS (one value) 
     def get_temperature(self, control_channel:str = 'A') -> float:
         """
         This method gets the current temperature [Kelvin] on channel control_channel.
         """        
-        return float(self.ls336.query(f'KRDG? {control_channel}'))
+        return float(self.query(f'KRDG? {control_channel}'))
 
     def get_sensor(self, control_channel:str = 'A') -> float:
         """
         This method gets the current sensor value (resistance) [Ohms].
         """
-        return float(self.ls336.query(f'SRDG? {control_channel}'))
+        return float(self.query(f'SRDG? {control_channel}'))
     
     def get_setpoint(self, control_loop:int = 2) -> float:
         """
         This method gets the active setpoint on control loop control_loop
         """       
-        return float(self.ls336.query(f'SETP? {control_loop:d}'))
+        return float(self.query(f'SETP? {int(control_loop):d}'))
     
-    def get_heater_range(self, control_loop:int = 2):
+    def get_heater_range(self, control_loop:int = 2) -> int:
         """
         This method gets the heater range index: 0 Off, 1 Low, 2 Medium, 3 High.
         """
-        return int(self.ls336.query(f'RANGE? {control_loop:d}')) or 0
+        return int(self.query(f'RANGE? {int(control_loop):d}')) or 0
     
     def get_heater_percent(self, control_loop:int = 2):
         """
         This method gets the heater output in percentage of the current range.
         """        
-        return float(self.ls336.query(f'HTR? {control_loop:d}'))
+        return float(self.query(f'HTR? {int(control_loop):d}'))
     
     def get_heater_percent_fullrange(self, control_loop:int = 2):
         """
         This method gets the heater output in percentage of the total heater power.
         """
-        heater_range = self.get_heater_range(control_loop)
-        heater_percent = self.get_heater_percent(control_loop)
+        heater_range = self.get_heater_range(int(control_loop))
+        heater_percent = self.get_heater_percent(int(control_loop))
 
         # Max low is 1%, max medium is 10%, max high is 100%
         heater_fullrange = 0.001 * 10**heater_range
@@ -129,7 +134,7 @@ class Lakeshore336:
         """
         This method gets the P, I, and D values for the control loop control_loop
         """       
-        raw_response = self.ls336.query(f'PID? {control_loop:d}')
+        raw_response = self.query(f'PID? {int(control_loop):d}')
         response = [float(value) for value in raw_response.split(',')]
         response_mapping = {'P': 0, 'I': 1, 'D': 2}
         if pid is None:
@@ -141,45 +146,45 @@ class Lakeshore336:
         """
         This method gets the ramp rate [K/min] for the control loop control_loop.
         """
-        return float(self.ls336.query(f'RAMP? {control_loop:d}').split(',')[1])
+        return float(self.query(f'RAMP? {int(control_loop):d}').split(',')[1])
     
     def get_manual_output(self, control_loop:int = 2) -> float:
         """
         This method gets the ramp rate [K/min] for the control loop control_loop.
         """
-        return float(self.ls336.query(f'MOUT? {control_loop:d}'))
+        return float(self.query(f'MOUT? {int(control_loop):d}'))
 
     # SIMPLE SETTERS
     def set_setpoint(self, setpoint:float, control_loop:int = 2):
         """
         This method sets the active setpoint on control loop control_loop
         """
-        self.ls336.write(f'SETP {control_loop:d},{setpoint:.2f}')
+        self.write(f'SETP {int(control_loop):d},{setpoint:.2f}')
 
     def set_heater_range(self, range_index: int, control_loop:int = 2):
         """
         This method sets the heater range given index: 0 Off, 1 Low, 2 Medium, 3 High.
         """
-        self.ls336.write(f'RANGE {control_loop:d},{range_index:d}')
+        self.write(f'RANGE {int(control_loop):d},{range_index:d}')
 
     def set_PID(self, P:float, I:float, D:float, control_loop:int = 2) :
         """
         This method gets the P, I, and D values for the control loop control_loop
         """       
-        self.ls336.write(f'PID {control_loop:d},{P:.1f},{I:.1f},{D:.1f}')
+        self.write(f'PID {int(control_loop):d},{P:.1f},{I:.1f},{D:.1f}')
 
     def set_ramp_rate(self, ramp_rate:float, control_loop:int = 2):
         """
         This method sets the ramp rate [K/min] for the control loop control_loop.
         """
         if ramp_rate != 0:
-            self.ls336.write(f'RAMP {control_loop:d},1,{ramp_rate:.2f}')
+            self.write(f'RAMP {int(control_loop):d},1,{ramp_rate:.2f}')
         else:
             # Turn off ramping
-            self.ls336.write(f'RAMP {control_loop:d},0,0')
+            self.write(f'RAMP {int(control_loop):d},0,0')
 
     def set_manual_output(self, manual_out:float, control_loop:int = 2):
         """
         This method gets the ramp rate [K/min] for the control loop control_loop.
         """
-        self.ls336.write(f'MOUT {control_loop:d},{manual_out:.2f}')
+        self.write(f'MOUT {int(control_loop):d},{manual_out:.2f}')

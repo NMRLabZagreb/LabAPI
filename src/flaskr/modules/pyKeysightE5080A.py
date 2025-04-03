@@ -74,32 +74,40 @@ class KeysightE5080A:
     def check_and_reset_communication(self):
         retries = 5
         connected = False
-        while not connected:
+        while not connected and retries:
             try:
                 self.connect()
-                self.VNA.query('*IDN?')
+                if self.VNA.query('*IDN?') != '':
+                    connected = True
             except:
-                # If connection fails wait 5 seconds and try again
-                time.sleep(5)
+                # If connection fails try again 
                 retries -= 1
-                # After 5 retries throw an exception
-                if not retries:
-                    raise Exception('Reseting the connection failed (5 retries). Check hardware connection.')
+                print('Conn failed')
+
+    # Query/Write functions check the communication before querying the device
+    def query(self, argument):
+        self.check_and_reset_communication()
+        return self.VNA.query(argument)
+
+    def write(self, argument):
+        self.check_and_reset_communication()
+        self.VNA.write(argument)
+
 
     # SIMPLE GETTERS (one value)
     def get_marker_X(self, marker_index: int) -> float:
         """
         Gets the position [in MHz] Marker [marker_index]
         """
-        self.VNA.write(f':CALC1:MARK{marker_index} ON')
-        return float(self.VNA.query(f':CALC1:MARK{marker_index}:X?'))/1000000 
+        self.write(f':CALC1:MARK{marker_index} ON')
+        return float(self.query(f':CALC1:MARK{marker_index}:X?'))/1000000 
 
     def get_marker_Y(self, marker_index: int) -> float:
         """
         Gets the S11 value [in dB] for Marker [marker_index]
         """
-        self.VNA.write(f':CALC1:MARK{marker_index} ON')
-        return float(self.VNA.query(f':CALC1:MARK{marker_index}:Y?').split(',')[0])
+        self.write(f':CALC1:MARK{marker_index} ON')
+        return float(self.query(f':CALC1:MARK{marker_index}:Y?').split(',')[0])
     
     def get_marker_Y_at(self, marker_index: int, frequency: float) -> float:
         """
@@ -112,14 +120,14 @@ class KeysightE5080A:
         """
         Gets the position [in MHz] of the S11 minimum in current sweep range
         """
-        self.VNA.write(f':CALC1:MARK{marker_index}:FUNC:EXEC MIN')
+        self.write(f':CALC1:MARK{marker_index}:FUNC:EXEC MIN')
         return self.get_marker_X(marker_index)
     
     def get_sweep_points(self) -> int:
         """
         Get the number of sweep points
         """
-        return int(self.VNA.query(f':SENS1:SWE:POIN?'))
+        return int(self.query(f':SENS1:SWE:POIN?'))
     
     def get_Q(self, marker_index: int) -> float:
         """
@@ -127,16 +135,16 @@ class KeysightE5080A:
         """
         # Center frequency
         frequency = self.get_minimum(marker_index)
-        self.VNA.write(f':SENS1:FREQ:CENT {frequency*1e6:.0f}')
+        self.write(f':SENS1:FREQ:CENT {frequency*1e6:.0f}')
 
         # Turn on bandwidth search and set threshold to 13 dB
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC ON')
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC:REF PEAK')
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC:THR -13')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC ON')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC:REF PEAK')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC:THR -13')
 
         # Query and return the data
-        data = self.VNA.query(f':CALC1:MEAS1:MARK{marker_index}:NOTC:DATA?')
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC OFF')
+        data = self.query(f':CALC1:MEAS1:MARK{marker_index}:NOTC:DATA?')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:NOTC OFF')
         return float(data.strip('\n').split(',')[2])
     
     # COMPLEX GETTERS (list of values)
@@ -144,8 +152,8 @@ class KeysightE5080A:
         """
         Gets the sweep range [in MHz]
         """
-        start = float(self.VNA.query(':SENS1:FREQ:STAR?'))/1e6
-        stop = float(self.VNA.query(':SENS1:FREQ:STOP?'))/1e6
+        start = float(self.query(':SENS1:FREQ:STAR?'))/1e6
+        stop = float(self.query(':SENS1:FREQ:STOP?'))/1e6
         return start, stop
 
     def get_filter(self, marker_index: int, threshold: float = 0.5) -> list:
@@ -154,22 +162,22 @@ class KeysightE5080A:
         """        
         # Center frequency
         frequency = self.get_minimum(marker_index)
-        self.VNA.write(f':SENS1:FREQ:CENT {frequency*1e6:.0f}')
+        self.write(f':SENS1:FREQ:CENT {frequency*1e6:.0f}')
 
         # Set display format to linear
-        self.VNA.write(':CALC1:FORM MLIN')
+        self.write(':CALC1:FORM MLIN')
         
         # Turn on bandwidth search and set threshold to half-maximum
         value = self.get_marker_Y_at(marker_index, frequency)
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:BWID ON')
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:BWID:THR {(1-value)/2:.2f}')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:BWID ON')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:BWID:THR {(1-value)/2:.2f}')
 
         # Query and return the data
-        data = self.VNA.query(f':CALC1:MEAS1:MARK{marker_index}:BWID:DATA?')
+        data = self.query(f':CALC1:MEAS1:MARK{marker_index}:BWID:DATA?')
 
         # Reset display format
-        self.VNA.write(f':CALC1:MEAS1:MARK{marker_index}:BWID OFF')
-        self.VNA.write(':CALC1:FORM MLOG')
+        self.write(f':CALC1:MEAS1:MARK{marker_index}:BWID OFF')
+        self.write(':CALC1:FORM MLOG')
         return [float(value) for value in data.strip('\n').split(',')]
     
     def get_complex_data(self) -> list:
@@ -182,7 +190,7 @@ class KeysightE5080A:
         frequencies = [start+i*(stop-start)/(points-1) for i in range(points)]
 
         # VNA returns data as string "real,imag,real,imag,...", format it and return
-        raw_data = self.VNA.query(':CALC1:MEAS1:DATA:SDAT?').split(',')
+        raw_data = self.query(':CALC1:MEAS1:DATA:SDAT?').split(',')
         complex_data = [float(raw_data[2*i])+float(raw_data[2*i+1])*1j for i in range(points)]
         return list(zip(frequencies, complex_data))     
 
@@ -191,20 +199,20 @@ class KeysightE5080A:
         """
         Sets the frequency [in MHz] of a Marker [marker_index]
         """
-        self.VNA.write(f':CALC1:MARK{marker_index}:X {frequency*1e6:.0f}')
+        self.write(f':CALC1:MARK{marker_index}:X {frequency*1e6:.0f}')
 
     def set_sweep_points(self, points: int):
         """
         Set the number of sweep points
         """
-        self.VNA.write(f':SENS1:SWE:POIN {points:d}')
+        self.write(f':SENS1:SWE:POIN {points:d}')
 
     def set_sweep_range(self, start, stop):
         """
         Sets the sweep range [in MHz]
         """
-        self.VNA.write(f':SENS1:FREQ:STAR {start*1e6:.0f}')
-        self.VNA.write(f':SENS1:FREQ:STOP {stop*1e6:.0f}')
+        self.write(f':SENS1:FREQ:STAR {start*1e6:.0f}')
+        self.write(f':SENS1:FREQ:STOP {stop*1e6:.0f}')
 
 if __name__=="__main__":
     ks = KeysightE5080A()
