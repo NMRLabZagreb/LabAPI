@@ -11,3 +11,7 @@ resources:
   ASRL6::INSTR:
     device: Lakeshore336
     filename: pyvisa-sim/Lakeshore336.yaml
+
+  ASRL7::INSTR:
+    device: ILM
+    filename: pyvisa-sim/ILM.yaml

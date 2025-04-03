@@ -1,0 +1,43 @@
+{"Lakeshore336": [
+	{"type": "gauge",
+	"name": "temperature",
+	"description": "Probe and VTI temperature in Kelvin",
+	"label_names": ["control_channel"],
+	"label_values": [["A"], ["B"]],
+	"method": "get_temperature",
+	"update_interval": 1
+	},
+	{"type": "gauge",
+	"name": "setpoint",
+	"description": "Probe and VTI temperature in Kelvin",
+	"label_names": ["control_loop"],
+	"label_values": [[2]],
+	"method": "get_setpoint",
+	"update_interval": 1
+	},
+	{"type": "gauge",
+	"name": "heater",
+	"description": "Heater percentage",
+	"label_names": ["control_loop"],
+	"label_values": [[2]],
+	"method": "get_heater_percent",
+	"update_interval": 1
+	},
+	{"type": "gauge",
+	"name": "heater_range",
+	"description": "Heater range",
+	"label_names": ["control_loop"],
+	"label_values": [[2]],
+	"method": "get_heater_range",
+	"update_interval": 1
+	},
+	{"type": "gauge",
+	"name": "pid",
+	"description": "Probe and VTI temperature in Kelvin",
+	"label_names": ["control_loop", "pid"],
+	"label_values": [[2, "P"], [2, "I"], [2, "D"]],
+	"method": "get_PID",
+	"update_interval": 1
+}
+]
+}

@@ -1,0 +1,26 @@
+spec: 1.0
+devices:
+  ILM:
+    eom:
+      USB INSTR:
+        q: "\r\n"
+        r: "\n"
+      ASRL INSTR:
+        q: "\r\n"
+        r: "\n"
+
+    error:
+      response:
+        command_error: -1
+      status_register:
+        - q: "*ESR?"
+          command_error: -32
+          query_error: -4
+
+    dialogues:
+      - q: "V"
+        r: "ILM"
+      - q: 'R 1'
+        r: '10.00'
+      - q: 'R 2'
+        r: '2.22'

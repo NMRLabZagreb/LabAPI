@@ -1,0 +1,31 @@
+  /ilm/get_lhe_level:
+    get:
+      tags:
+        - Intelligent Level Meter
+      summary: Get the liquid helium level
+      description: Returns the liquid helium level as percentage (0-100).
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /ilm/get_ln2_level:
+    get:
+      tags:
+        - Intelligent Level Meter
+      summary: Get the liquid nitrogen level
+      description: Returns the liquid nitrogen level as percentage (0-100).
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  
