@@ -1,0 +1,39 @@
+  /coaxial_switch/get_switch:
+    get:
+      tags:
+        - Coaxial switch
+      summary: Get the coaxial switch state
+      description: Returns the state of a coaxial switch 'spectro' or 'vna'.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  /coaxial_switch/set_switch:
+    put:
+      tags:
+        - Coaxial switch
+      summary: Set the coaxial switch state
+      description: Sets the coaxial switch state to 'spectro' or 'vna'
+      produces:
+        - plain/text
+      parameters:
+        - name: to
+          in: query
+          description: Coaxial switch state
+          required: true
+          default: 'spectro'
+          type: text
+          enum: ['spectro', 'vna']
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  

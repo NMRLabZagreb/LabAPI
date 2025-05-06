@@ -1,0 +1,37 @@
+  /nanotec_smc/make_n_steps:
+    put:
+      tags:
+        - Nanotec SMC
+      summary: Make N steps
+      description: Makes N steps given the speed and a stepper motor ID.
+      produces:
+        - plain/text
+      parameters:
+        - name: steps
+          in: query
+          description: Number of steps
+          required: true
+          default: 0
+          type: integer
+        - name: seconds_per_turn
+          in: query
+          description: Motor speed in seconds per full turn.
+          required: true
+          default: 2.0
+          type: number
+          format: float32
+        - name: motor
+          in: query
+          description: Stepper motor ID
+          required: true
+          default: 'tune'
+          type: text
+          enum: ['tune', 'match']
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.
+  
