@@ -32,7 +32,7 @@ from ...modules.pyNanotecSMC import NanotecSMC
 blueprint = Blueprint('NanotecSMC', __name__, url_prefix='/nanotec_smc')
 
 class localNanotecSMC():
-    def __init__(self):
+    def __init__(self, device_present: bool = True):
         # Instantiate a ParallelPort resource
         self.smc = NanotecSMC()
 
@@ -59,3 +59,6 @@ class localNanotecSMC():
                                       float(request.args['seconds_per_turn']),
                                       str(request.args['motor']))
                 return str(""), 200
+        
+        # Return blueprint to register in Flask app
+        return blueprint

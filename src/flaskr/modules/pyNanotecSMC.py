@@ -26,10 +26,10 @@ import os
 import configparser
 import time
 import threading
-from pyParallel import ParallelPort
+from .pyParallel import ParallelPort
 
 class NanotecSMC:
-    def __init__(self, address: str = None) -> None:
+    def __init__(self, address: str = None, device_present: bool = True) -> None:
         """
         Class to wrap communications with Nanotec SMC11-2 controller(s)
             
@@ -64,6 +64,7 @@ class NanotecSMC:
 
         # Initialize communication
         self.stop_flag = False
+        self.positions = {'tune': 0., 'match': 0.}
         self.thread_lock = threading.Lock()
         self.check_and_reset_communication()
 
@@ -89,28 +90,32 @@ class NanotecSMC:
         direction_bit = self.bit_offset[motor]
         clock_bit = self.bit_offset[motor] + 1
         enable_bit = self.bit_offset[motor] + 2
-        steps_remaining = abs(steps)
-        step_delay = steps / self.steps_per_turn * seconds_per_turn
+        self.steps_remaining = abs(steps)
+        step_delay = seconds_per_turn / self.steps_per_turn
 
         def __run__():
             self.stop_flag = False
             # Enable motor
-            self.smc.set_data_high(enable_bit)
-            while not self.stop_flag and steps_remaining:
+            self.smc.set_data_low(enable_bit)
+            while not self.stop_flag and self.steps_remaining:
+                # Precise step timing
+                start_timer = time.perf_counter()
                 # Make a step
                 self.smc.set_data_low(direction_bit) if steps > 0 else self.smc.set_data_high(direction_bit)
                 self.smc.set_data_low(clock_bit)
                 time.sleep(self.min_delay)
                 self.smc.set_data_high(clock_bit)
                 time.sleep(self.min_delay)
-                # Precise step timing
-                start_timer = time.perf_counter()
-                while time.perf_counter()-start_timer < step_delay:
+                # Make note of motor position
+                self.steps_remaining-=1
+                self.positions[motor]+= 1.0 / self.steps_per_turn
+                # Step delay
+                while (time.perf_counter()-start_timer) < step_delay:
                     time.sleep(self.min_delay)
-            self.smc.set_data_low(enable_bit)
-    
-        thread = threading.Thread(target = __run__)
-        thread.daemon = False
+                    
+            # Disable motor
+            self.smc.set_data_high(enable_bit)
+        thread = threading.Thread(target=__run__)
         thread.start()
     
     def stop_all(self):

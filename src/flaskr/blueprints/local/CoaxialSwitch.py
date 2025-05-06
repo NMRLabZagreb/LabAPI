@@ -31,8 +31,8 @@ from ...modules.pyCoaxialSwitch import CoaxialSwitch
 # Blueprint is a global variable
 blueprint = Blueprint('CoaxialSwitch', __name__, url_prefix='/coaxial_switch')
 
-class localNanotecSMC():
-    def __init__(self):
+class localCoaxialSwitch():
+    def __init__(self, device_present: bool = True):
         # Instantiate a ParallelPort resource
         self.switch = CoaxialSwitch()
 
@@ -63,3 +63,6 @@ class localNanotecSMC():
             elif request.method == 'GET' or request.method == 'PUT':
                 self.switch.set_switch(str(request.args['to']))
                 return str(""), 200
+
+        # Return blueprint to register in Flask app
+        return blueprint

@@ -25,7 +25,7 @@
           description: Stepper motor ID
           required: true
           default: 'tune'
-          type: text
+          type: string
           enum: ['tune', 'match']
       responses:
         200:
@@ -34,4 +34,3 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  

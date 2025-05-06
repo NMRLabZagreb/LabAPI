@@ -26,10 +26,10 @@ import os
 import configparser
 import time
 import threading
-from pyParallel import ParallelPort
+from .pyParallel import ParallelPort
 
 class CoaxialSwitch:
-    def __init__(self, address: str = None) -> None:
+    def __init__(self, address: str = None, device_present: bool = True) -> None:
         """
         Class to wrap communications with Teledyne Coaxial Switch
             

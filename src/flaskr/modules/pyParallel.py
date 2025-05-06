@@ -29,19 +29,19 @@ class ParallelPort:
             self.pstate = ['0'] * 8
 
     def set_data_high(self, pin: int):
-        with self.lock:
+        with self.thread_lock:
             self.pstate[7-pin] = '1'
             self.pport.Out32(self.lpt, int(''.join(self.pstate), 2))
 
     def set_data_low(self, pin: int):
-        with self.lock:
+        with self.thread_lock:
             self.pstate[7-pin] = '0'
             self.pport.Out32(self.lpt, int(''.join(self.pstate), 2))
 
     def get_data(self, pin: int) -> int:
-        with self.lock:
+        with self.thread_lock:
             return int(self.pstate[pin])
 
     def get_status(self):
-        with self.lock:
+        with self.thread_lock:
             return self.pport.Inp32(self.lpt + 1)

@@ -1,7 +1,7 @@
   /coaxial_switch/get_switch:
     get:
       tags:
-        - Coaxial switch
+        - Coaxial Switch
       summary: Get the coaxial switch state
       description: Returns the state of a coaxial switch 'spectro' or 'vna'.
       produces:
@@ -16,7 +16,7 @@
   /coaxial_switch/set_switch:
     put:
       tags:
-        - Coaxial switch
+        - Coaxial Switch
       summary: Set the coaxial switch state
       description: Sets the coaxial switch state to 'spectro' or 'vna'
       produces:
@@ -27,7 +27,7 @@
           description: Coaxial switch state
           required: true
           default: 'spectro'
-          type: text
+          type: string
           enum: ['spectro', 'vna']
       responses:
         200:
@@ -36,4 +36,3 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  

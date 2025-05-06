@@ -28,4 +28,3 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
-  
