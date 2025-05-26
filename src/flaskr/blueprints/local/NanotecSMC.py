@@ -59,6 +59,15 @@ class localNanotecSMC():
                                       float(request.args['seconds_per_turn']),
                                       str(request.args['motor']))
                 return str(""), 200
+
+        @blueprint.route('/get_position', methods=['GET', 'POST'])
+        def get_position():
+            if request.method == 'POST':
+                response = self.smc.get_position(str(request.json['motor']))
+                return jsonify({'position': float(response)}), 200
+            elif request.method == 'GET':
+                response = self.smc.get_position(str(request.args['motor']))
+                return str(response), 200
         
         # Return blueprint to register in Flask app
         return blueprint

@@ -34,56 +34,42 @@ class NanotecSMC:
         Class to wrap communications with Nanotec SMC11-2 controller(s)
             
         """
-        path = os.path.dirname(__file__)
-        config = configparser.ConfigParser()
-        config.read(f'{path}/config.ini')
+        self.path = os.path.dirname(__file__)
+        self.config = configparser.ConfigParser()
+        self.config.read(f'{self.path}/config.ini')
 
         # Handle resource address and configuration
         if address is not None:
             # Save configuration
             self.address = address
-            config['NanotecSMC']['address'] = address
+            self.config['NanotecSMC']['address'] = address
         else:
-            if 'NanotecSMC' in config:
-                    if 'address' in config['NanotecSMC']:
-                        self.address = config['NanotecSMC']['address']
+            if 'NanotecSMC' in self.config:
+                    if 'address' in self.config['NanotecSMC']:
+                        self.address = self.config['NanotecSMC']['address']
                     else:
                         raise Exception('Resource address not provided!')
                     # Parallel port bit offsets for tuning and matching stepper motors
                     self.bit_offset = {'tune': 0, 'match': 3}
-                    self.min_delay = 5e-6 # 5 us
+                    self.min_delay = 1e-5 # 5 us
                     self.steps_per_turn = 200
-                    if 'tune_offset' in config['NanotecSMC']:
-                        self.bit_offset['tune'] = config['NanotecSMC']['tune_offset']
-                    if 'match_offset' in config['NanotecSMC']:
-                        self.bit_offset['match'] = config['NanotecSMC']['match_offset']
-                    if 'min_delay' in config['NanotecSMC']:
-                        self.min_delay = config['NanotecSMC']['min_delay']
-                    if 'min_delay' in config['NanotecSMC']:
-                        self.steps_per_turn = config['NanotecSMC']['steps_per_turn']
+                    if 'tune_offset' in self.config['NanotecSMC']:
+                        self.bit_offset['tune'] = self.config['NanotecSMC']['tune_offset']
+                    if 'match_offset' in self.config['NanotecSMC']:
+                        self.bit_offset['match'] = self.config['NanotecSMC']['match_offset']
+                    if 'min_delay' in self.config['NanotecSMC']:
+                        self.min_delay = self.config['NanotecSMC']['min_delay']
+                    if 'min_delay' in self.config['NanotecSMC']:
+                        self.steps_per_turn = self.config['NanotecSMC']['steps_per_turn']
 
         # Initialize communication
         self.stop_flag = False
-        self.positions = {'tune': 0., 'match': 0.}
         self.thread_lock = threading.Lock()
-        self.check_and_reset_communication()
+        self.connect()
 
     # Connector
     def connect(self):
         self.smc = ParallelPort(self.address, self.thread_lock)
-
-    # Test connection to the device and reconnect if necessary
-    def check_and_reset_communication(self):
-        retries = 5
-        connected = False
-        while not connected and retries:
-            try:
-                self.connect()
-                if self.smc.get_status():
-                    connected = True
-            except:
-                # If connection fails try again 
-                retries -= 1
 
     # COMMANDS
     def make_n_steps(self, steps, seconds_per_turn, motor='tune'):
@@ -95,28 +81,41 @@ class NanotecSMC:
 
         def __run__():
             self.stop_flag = False
+            position = float(self.config['NanotecSMC'][f'{motor}_position'])
             # Enable motor
             self.smc.set_data_low(enable_bit)
             while not self.stop_flag and self.steps_remaining:
                 # Precise step timing
                 start_timer = time.perf_counter()
                 # Make a step
-                self.smc.set_data_low(direction_bit) if steps > 0 else self.smc.set_data_high(direction_bit)
                 self.smc.set_data_low(clock_bit)
+                time.sleep(self.min_delay)
+                self.smc.set_data_low(direction_bit) if steps > 0 else self.smc.set_data_high(direction_bit)
                 time.sleep(self.min_delay)
                 self.smc.set_data_high(clock_bit)
                 time.sleep(self.min_delay)
+                self.smc.set_data_low(clock_bit)
+                time.sleep(self.min_delay)
                 # Make note of motor position
-                self.steps_remaining-=1
-                self.positions[motor]+= 1.0 / self.steps_per_turn
+                self.steps_remaining -= 1
+                position += (1 if steps > 0 else -1)
+                if position <= 0:
+                    self.stop_flag = True
                 # Step delay
                 while (time.perf_counter()-start_timer) < step_delay:
                     time.sleep(self.min_delay)
-                    
             # Disable motor
             self.smc.set_data_high(enable_bit)
+            self.config['NanotecSMC'][f'{motor}_position'] = f'{position:.1f}'
+            
         thread = threading.Thread(target=__run__)
         thread.start()
+        thread.join()
+        with open(f'{self.path}/config.ini', 'w') as configfile:
+            self.config.write(configfile)
+
+    def get_position(self, motor='tune'):
+        return float(self.config['NanotecSMC'][f'{motor}_position'])
     
     def stop_all(self):
         self.stop_flag = True

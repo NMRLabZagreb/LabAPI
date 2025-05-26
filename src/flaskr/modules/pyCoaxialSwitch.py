@@ -58,24 +58,11 @@ class CoaxialSwitch:
 
         # Initialize communication
         self.thread_lock = threading.Lock()
-        self.check_and_reset_communication()
+        self.connect()
 
     # Connector
     def connect(self):
         self.switch = ParallelPort(self.address, self.thread_lock)
-
-    # Test connection to the device and reconnect if necessary
-    def check_and_reset_communication(self):
-        retries = 5
-        connected = False
-        while not connected and retries:
-            try:
-                self.connect()
-                if self.switch.get_status():
-                    connected = True
-            except:
-                # If connection fails try again 
-                retries -= 1
 
     # GETTERS
     def get_switch(self):
