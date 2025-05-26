@@ -306,3 +306,18 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
+  /keysighte5080a/connect:
+    put:
+      tags:
+        - Keysight E5080A
+      summary: Reinitialize VISA communication
+      description: This endpoint calls connect() function which reinitializes Keysight E5080A device class.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.

@@ -51,7 +51,7 @@ class IPS120:
 
         # Test a connection
         self.device_present = device_present
-        self.check_and_reset_communication()
+        self.connect()
 
         # Define status codes
         self.system_status_m = {0: 'Normal',
@@ -87,26 +87,11 @@ class IPS120:
         # Set termination to /r/n
         self.ips.write('Q2')
 
-    # Test connection to the device and reconnect if necessary
-    def check_and_reset_communication(self):
-        retries = 5
-        connected = False
-        while not connected and retries:
-            try:
-                self.connect()
-                if self.ips.query('V') != '':
-                    connected = True
-            except:
-                # If connection fails try again 
-                retries -= 1
-
-    # Query/Write functions check the communication before querying the device
+    # Query/Write functions to issue a direct query/write command and receive raw response
     def query(self, argument):
-        self.check_and_reset_communication()
         return self.ips.query(argument)
 
     def write(self, argument):
-        self.check_and_reset_communication()
         self.ips.write(argument)
 
 
@@ -315,7 +300,7 @@ class IPS120:
 
         # Go to the current field and turn on heater
         if self.get_persistent_field() != self.get_output_field() and not self.get_is_heater_on():
-            self.set_setpoint_field(self.get_persistent_field)
+            self.set_setpoint_field(self.get_persistent_field())
             self.set_go_to_setpoint()
             while self.get_persistent_field() != self.get_output_field():
                 time.sleep(5)

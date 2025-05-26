@@ -51,7 +51,7 @@ class ILM:
 
         # Test a connection
         self.device_present = device_present
-        self.check_and_reset_communication()
+        self.connect()
         
     # Connector
     def connect(self):
@@ -66,26 +66,11 @@ class ILM:
         # Set termination to /r/n
         self.ilm.write('Q2')
 
-    # Test connection to the device and reconnect if necessary
-    def check_and_reset_communication(self):
-        retries = 5
-        connected = False
-        while not connected and retries:
-            try:
-                self.connect()
-                if self.ilm.query('V') != '':
-                    connected = True
-            except:
-                # If connection fails try again 
-                retries -= 1
-
-    # Query/Write functions check the communication before querying the device
+    # Query/Write functions to issue a direct query/write command and receive raw response
     def query(self, argument):
-        self.check_and_reset_communication()
         return self.ilm.query(argument)
 
     def write(self, argument):
-        self.check_and_reset_communication()
         self.ilm.write(argument)
 
 
@@ -94,10 +79,18 @@ class ILM:
         """
         This method gets the current liquid helium level.
         """
-        return float(self.query('R 1').strip('R'))/10
+        while True:
+            try:
+                return float(self.query('R 1').strip('R'))/10
+            except:
+                pass
     
     def get_LN2_level(self) -> float:
         """
         This method gets the current liquid nitrogen level.
         """
-        return float(self.query('R 2').strip('R'))/10
+        while True:
+            try:
+                return float(self.query('R 2').strip('R'))/10
+            except:
+                pass

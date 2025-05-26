@@ -28,3 +28,18 @@
           description: Not authorized.
         500:
           description: Internal unhandled server error. Contact developers.
+  /ilm/connect:
+    put:
+      tags:
+        - Intelligent Level Meter
+      summary: Reinitialize VISA communication
+      description: This endpoint calls connect() function which reinitializes ILM device class.
+      produces:
+        - plain/text
+      responses:
+        200:
+          description: Success.
+        401:
+          description: Not authorized.
+        500:
+          description: Internal unhandled server error. Contact developers.

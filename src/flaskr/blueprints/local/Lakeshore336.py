@@ -48,6 +48,32 @@ class localLakeshore336():
             A function to set API routes: in most cases API endpoint path == Lakeshore336 class method.
             Most functions are boilerplate and can handle GET and POST methods.
         '''
+        @blueprint.route('/connect', methods=['GET', 'PUT', 'POST'])
+        def connect():
+            self.ls.connect()
+            if request.method == 'POST':
+                return jsonify({}), 200
+            elif request.method == 'GET':   
+                return str(""), 200
+
+        @blueprint.route('/query', methods=['GET', 'PUT', 'POST'])
+        def query():
+            if request.method == 'POST':
+                response_value = self.ls.query(str(request.json['command']))
+                return jsonify({'raw_response': response_value}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                response_value = self.ls.query(int(request.args['command']))
+                return str(response_value), 200
+
+        @blueprint.route('/write', methods=['GET', 'PUT', 'POST'])
+        def write():
+            if request.method == 'POST':
+                self.ls.write(str(request.json['command']))
+                return jsonify({}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                self.ls.write(int(request.args['command']))
+                return str(""), 200
+
         @blueprint.route('/get_temperature', methods=['GET', 'POST'])
         def get_temperature():
             if request.method == 'POST':
@@ -161,9 +187,14 @@ class localLakeshore336():
                                 int(request.json['control_loop']))
                 return jsonify({}), 200
             elif request.method == 'GET' or request.method == 'PUT':
-                self.ls.set_PID(float(request.args['P']),
-                                float(request.args['I']),
-                                float(request.args['D']),
+                P, I, D = None, None, None
+                if 'P' in request.args.keys():
+                    P = float(request.args['P'])
+                if 'I' in request.args.keys():
+                    I = float(request.args['I'])
+                if 'D' in request.args.keys():
+                    D = float(request.args['D'])
+                self.ls.set_PID(P, I, D,
                                 int(request.args['control_loop']))
                 return str(""), 200
             

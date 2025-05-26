@@ -47,6 +47,32 @@ class localKeysightE5080A():
             A function to set API routes: in most cases API endpoint path == KeysightE5080A class method.
             Most functions are boilerplate and can handle GET and POST methods.
         '''
+        @blueprint.route('/connect', methods=['GET', 'PUT', 'POST'])
+        def connect():
+            self.VNA.connect()
+            if request.method == 'POST':
+                return jsonify({}), 200
+            elif request.method == 'GET':   
+                return str(""), 200
+
+        @blueprint.route('/query', methods=['GET', 'PUT', 'POST'])
+        def query():
+            if request.method == 'POST':
+                response_value = self.VNA.query(str(request.json['command']))
+                return jsonify({'raw_response': response_value}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                response_value = self.VNA.query(int(request.args['command']))
+                return str(response_value), 200
+
+        @blueprint.route('/write', methods=['GET', 'PUT', 'POST'])
+        def write():
+            if request.method == 'POST':
+                self.VNA.write(str(request.json['command']))
+                return jsonify({}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                self.VNA.write(int(request.args['command']))
+                return str(""), 200
+            
         @blueprint.route('/get_marker_X', methods=['GET', 'POST'])
         def get_marker_X():
             if request.method == 'POST':
@@ -129,7 +155,9 @@ class localKeysightE5080A():
         def get_complex_data():
             response_value = self.VNA.get_complex_data()
             if request.method == 'POST':
-                return jsonify({"data": response_value}), 200
+                return jsonify([{'frequency': point[0],
+                                 'real': point[1].real,
+                                 'imag': point[1].imag} for point in response_value]), 200
             elif request.method == 'GET':
                 output_string = '\n'.join([f"{point[0]:.2f}\t{point[1]}" for point in response_value])
                 return output_string, 200

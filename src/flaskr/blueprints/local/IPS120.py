@@ -47,6 +47,32 @@ class localIPS120():
             A function to set API routes: in most cases API endpoint path == IPS120 class method.
             Most functions are boilerplate and can handle GET and POST methods.
         '''
+        @blueprint.route('/connect', methods=['GET', 'PUT', 'POST'])
+        def connect():
+            self.ips.connect()
+            if request.method == 'POST':
+                return jsonify({}), 200
+            elif request.method == 'GET':   
+                return str(""), 200
+
+        @blueprint.route('/query', methods=['GET', 'PUT', 'POST'])
+        def query():
+            if request.method == 'POST':
+                response_value = self.ips.query(str(request.json['command']))
+                return jsonify({'raw_response': response_value}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                response_value = self.ips.query(int(request.args['command']))
+                return str(response_value), 200
+
+        @blueprint.route('/write', methods=['GET', 'PUT', 'POST'])
+        def write():
+            if request.method == 'POST':
+                self.ips.write(str(request.json['command']))
+                return jsonify({}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                self.ips.write(int(request.args['command']))
+                return str(""), 200
+
         @blueprint.route('/get_output_current', methods=['GET', 'POST'])
         def get_output_current():
             response_value = self.ips.get_output_current()

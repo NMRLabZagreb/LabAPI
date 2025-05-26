@@ -56,7 +56,7 @@ class KeysightE5080A:
         
         self.device_present = device_present
         # Initialize communication
-        self.check_and_reset_communication()
+        self.connect()
         
     # Connector
     def connect(self):
@@ -70,29 +70,20 @@ class KeysightE5080A:
         # Set non-typical parameters
         self.VNA.write(':CALC1:PAR:SEL "CH1_S11_1"')
 
-    # Test connection to the device and reconnect if necessary
-    def check_and_reset_communication(self):
-        retries = 5
-        connected = False
-        while not connected and retries:
-            try:
-                self.connect()
-                if self.VNA.query('*IDN?') != '':
-                    connected = True
-            except:
-                # If connection fails try again 
-                retries -= 1
-                print('Conn failed')
-
-    # Query/Write functions check the communication before querying the device
+    # Query/Write functions to issue a direct query/write command and receive raw response
     def query(self, argument):
-        self.check_and_reset_communication()
-        return self.VNA.query(argument)
+        try:
+            return self.VNA.query(argument)
+        except Exception as e:
+            print(e)
+            return ""
 
     def write(self, argument):
-        self.check_and_reset_communication()
-        self.VNA.write(argument)
-
+        try:
+            return self.VNA.write(argument)
+        except Exception as e:
+            print(e)
+            return ""
 
     # SIMPLE GETTERS (one value)
     def get_marker_X(self, marker_index: int) -> float:

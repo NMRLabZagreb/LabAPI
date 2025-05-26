@@ -26,6 +26,7 @@ __version__ = "v0.1"
 import pyvisa as visa
 import os
 import configparser
+from threading import Lock
 
 class Lakeshore336:
     def __init__(self, address: str = None, device_present: bool = False) -> None:
@@ -36,6 +37,7 @@ class Lakeshore336:
         path = os.path.dirname(__file__)
         config = configparser.ConfigParser()
         config.read(f'{path}/config.ini')
+        self.device_in_use = Lock()
 
         # Handle resource address
         if address is not None:
@@ -50,7 +52,7 @@ class Lakeshore336:
 
         self.device_present = device_present
         # Initialize communication
-        self.check_and_reset_communication()
+        self.connect()
 
     # Connector
     def connect(self):
@@ -60,33 +62,20 @@ class Lakeshore336:
             # Mock VISA
             self.rm = visa.ResourceManager(f'{os.path.dirname(__file__)}/pyvisa-sim.yaml@sim')
         # Initialize communication
-        self.ls336 = self.rm.open_resource(self.address, read_termination = '\r\n', write_termination = '\r\n')
+        self.ls336 = self.rm.open_resource(self.address, read_termination = '\r\n', write_termination = '\r\n', query_delay=0.5)
         # Set non-typical parameters
         self.ls336.baud_rate = 57600
         self.ls336.data_bits = 7
         self.ls336.parity = visa.constants.Parity.odd
 
-    # Test connection to the device and reconnect if necessary
-    def check_and_reset_communication(self):
-        retries = 5
-        connected = False
-        while not connected and retries:
-            try:
-                self.connect()
-                if self.ls336.query('*IDN?') != '':
-                    connected = True
-            except:
-                # If connection fails try again 
-                retries -= 1
-
-    # Query/Write functions check the communication before querying the device
+    # Query/Write functions to issue a direct query/write command and receive raw response
     def query(self, argument):
-        self.check_and_reset_communication()
-        return self.ls336.query(argument)
-
+        with self.device_in_use:
+            return self.ls336.query(argument)
+            
     def write(self, argument):
-        self.check_and_reset_communication()
-        self.ls336.write(argument)
+        with self.device_in_use:
+            self.ls336.write(argument)
 
     # SIMPLE GETTERS (one value) 
     def get_temperature(self, control_channel:str = 'A') -> float:
@@ -167,11 +156,12 @@ class Lakeshore336:
         """
         self.write(f'RANGE {int(control_loop):d},{range_index:d}')
 
-    def set_PID(self, P:float, I:float, D:float, control_loop:int = 2) :
+    def set_PID(self, P:float = None, I:float = None, D:float = None, control_loop:int = 2) :
         """
         This method gets the P, I, and D values for the control loop control_loop
-        """       
-        self.write(f'PID {int(control_loop):d},{P:.1f},{I:.1f},{D:.1f}')
+        """
+        current_pid = self.get_PID(control_loop)
+        self.write(f'PID {int(control_loop):d},{(P or current_pid[0]):.1f},{(I or current_pid[1]):.1f},{(D or current_pid[2]):.1f}')
 
     def set_ramp_rate(self, ramp_rate:float, control_loop:int = 2):
         """
