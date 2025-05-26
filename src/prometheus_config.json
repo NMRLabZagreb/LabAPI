@@ -38,6 +38,23 @@
 	"label_values": [[2, "P"], [2, "I"], [2, "D"]],
 	"method": "get_PID",
 	"update_interval": 1
-}
-]
+	}
+	],
+"ILM": [
+	{"type": "gauge",
+	"name": "helium_level_12T",
+	"description": "Liquid helium level in 12T magnet",
+	"label_names": [],
+	"label_values": [],
+	"method": "get_LHe_level",
+	"update_interval": 60
+	},
+	{"type": "gauge",
+	"name": "nitrogen_level_12T",
+	"description": "Liquid nitrogen level in 12T magnet",
+	"label_names": [],
+	"label_values": [],
+	"method": "get_LN2_level",
+	"update_interval": 60
+	}]
 }

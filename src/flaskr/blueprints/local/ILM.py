@@ -34,7 +34,7 @@ blueprint = Blueprint('ILM', __name__, url_prefix='/ilm')
 class localILM():
     def __init__(self, device_present: bool = False):
         # Instantiate a VISA resource; ILM class implements various VISA queries as class methods
-        self.ips = ILM(device_present=device_present)
+        self.ilm = ILM(device_present=device_present)
         
     # Authorization check
     @blueprint.before_request
@@ -47,9 +47,35 @@ class localILM():
             A function to set API routes: in most cases API endpoint path == ILM class method.
             Most functions are boilerplate and can handle GET and POST methods.
         '''
+        @blueprint.route('/connect', methods=['GET', 'PUT', 'POST'])
+        def connect():
+            self.ilm.connect()
+            if request.method == 'POST':
+                return jsonify({}), 200
+            elif request.method == 'GET':   
+                return str(""), 200
+
+        @blueprint.route('/query', methods=['GET', 'PUT', 'POST'])
+        def query():
+            if request.method == 'POST':
+                response_value = self.ilm.query(str(request.json['command']))
+                return jsonify({'raw_response': response_value}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                response_value = self.ilm.query(int(request.args['command']))
+                return str(response_value), 200
+
+        @blueprint.route('/write', methods=['GET', 'PUT', 'POST'])
+        def write():
+            if request.method == 'POST':
+                self.ilm.write(str(request.json['command']))
+                return jsonify({}), 200
+            elif request.method == 'GET' or request.method == 'PUT':
+                self.ilm.write(int(request.args['command']))
+                return str(""), 200
+        
         @blueprint.route('/get_lhe_level', methods=['GET', 'POST'])
         def get_LHe_level():
-            response_value = self.ips.get_LHe_level()
+            response_value = self.ilm.get_LHe_level()
             if request.method == 'POST':            
                 return jsonify({'LHe_level': response_value}), 200
             elif request.method == 'GET':
@@ -57,7 +83,7 @@ class localILM():
             
         @blueprint.route('/get_ln2_level', methods=['GET', 'POST'])
         def get_LN2_level():
-            response_value = self.ips.get_LN2_level()
+            response_value = self.ilm.get_LN2_level()
             if request.method == 'POST':
                 return jsonify({'LN2_level': response_value}), 200
             elif request.method == 'GET':
